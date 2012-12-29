@@ -17,13 +17,10 @@
 */
 
 using SDL;
-using SDLGraphics;
 
 namespace ValaGL {
 
 public class App : GLib.Object {
-	private const int DELAY = 10;
-
 	private unowned SDL.Screen screen;
 	private GLib.Rand rand;
 	private bool done;
@@ -33,40 +30,41 @@ public class App : GLib.Object {
 	}
 
 	public void run () {
+		done = true;
 		init_video ();
 
 		while (!done) {
-			draw ();
 			process_events ();
-			SDL.Timer.delay (DELAY);
+			draw ();
 		}
 	}
 
 	private void init_video () {
-		uint32 video_flags = SurfaceFlag.DOUBLEBUF
-							| SurfaceFlag.HWACCEL
-							| SurfaceFlag.HWSURFACE
-							| SurfaceFlag.FULLSCREEN;
-
+		SDL.GL.set_attribute (GLattr.RED_SIZE, 8);
+		SDL.GL.set_attribute (GLattr.GREEN_SIZE, 8);
+		SDL.GL.set_attribute (GLattr.BLUE_SIZE, 8);
+		SDL.GL.set_attribute (GLattr.ALPHA_SIZE, 8);
+		SDL.GL.set_attribute (GLattr.DEPTH_SIZE, 24);
+		SDL.GL.set_attribute (GLattr.DOUBLEBUFFER, 1);
+		
+		uint32 video_flags = SurfaceFlag.OPENGL | SurfaceFlag.FULLSCREEN;
 		this.screen = Screen.set_video_mode (0, 0, 32, video_flags);
 		
 		if (this.screen == null) {
 			stderr.printf ("Could not set video mode.\n");
+			return;
 		}
 
 		SDL.WindowManager.set_caption ("Vala SDL Demo", "");
+		GL.glClearColor (71.0f/255, 95.0f/255, 121.0f/255, 1);
+		
+		// Initialization successful if we got here
+		done = false;
 	}
 
 	private void draw () {
-		int16 x = (int16) rand.int_range (0, screen.w);
-		int16 y = (int16) rand.int_range (0, screen.h);
-		int16 radius = (int16) rand.int_range (0, 100);
-		uint32 color = rand.next_int ();
-
-		Circle.fill_color (this.screen, x, y, radius, color);
-		Circle.outline_color_aa (this.screen, x, y, radius, color);
-
-		this.screen.flip ();
+		GL.glClear (GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
+		SDL.GL.swap_buffers ();
 	}
 
 	private void process_events () {
@@ -84,11 +82,32 @@ public class App : GLib.Object {
 	}
 
 	private void on_keyboard_event (KeyboardEvent event) {
-		if (event.keysym.sym == KeySymbol.ESCAPE) {
-			Event e = Event();
-			e.type = EventType.QUIT;
-			Event.push(e);
+		switch (event.keysym.sym) {
+		case KeySymbol.ESCAPE:
+			on_quit();
+			break;
+		case KeySymbol.F4:
+			if ((event.keysym.mod & KeyModifier.LALT) != 0 || (event.keysym.mod & KeyModifier.RALT) != 0) {
+				on_quit();
+			}
+			
+			break;
+		case KeySymbol.TAB:
+			if ((event.keysym.mod & KeyModifier.LALT) != 0 || (event.keysym.mod & KeyModifier.RALT) != 0) {
+				SDL.WindowManager.iconify ();
+			}
+			
+			break;
+		default:
+			// TODO: Handle other keyboard combinations
+			break;
 		}
+	}
+	
+	private void on_quit () {
+		Event e = Event();
+		e.type = EventType.QUIT;
+		Event.push(e);
 	}
 
 	public static int main (string[] args) {
