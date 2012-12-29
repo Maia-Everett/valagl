@@ -1,7 +1,18 @@
+set(VALAGL_CORE_CLASSES
+	CoreError
+	Util
+)
+
+foreach(CLASS ${VALAGL_CORE_CLASSES})
+	set(APP_SOURCES ${APP_SOURCES} "ValaGL.Core/${CLASS}.vala")
+endforeach()
+
 set(VALAGL_CLASSES
+	AppError
 	App
+	Canvas
 )
 
 foreach(CLASS ${VALAGL_CLASSES})
-	set(VALAGL_SOURCES ${VALAGL_SOURCES} "ValaGL/${CLASS}.vala")
+	set(APP_SOURCES ${APP_SOURCES} "ValaGL/${CLASS}.vala")
 endforeach()

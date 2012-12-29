@@ -1,7 +1,6 @@
-#!/usr/bin/env python
-template = """/*
-    ${CLASS}.vala
-    Copyright (C) 2012 Maia Everett <maia@everett.one>
+/*
+    Util.vala
+    Copyright (C) 2010-2012 Maia Everett <maia@everett.one>
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
@@ -22,19 +21,33 @@ template = """/*
     THE SOFTWARE.
 */
 
-namespace ${NS} {
+namespace ValaGL.Core {
 
-public class ${CLASS} : Object {
+public class Util : GLib.Object {
+	private Util () {}
 	
+	private static bool first_run = true;
+	private static bool local_install;
+	
+	public static bool is_local_install () {
+		if (first_run) {
+			local_install = FileUtils.test ("ValaGL/App.vala", FileTest.EXISTS);
+			first_run = false;
+		}
+		
+		return local_install;
+	}
+	
+	private static string get_data_dir () {
+		if (is_local_install ())
+			return "data";
+		
+		return AppConfig.APP_DATA_DIR;
+	}
+	
+	public static string data_file_path (string rel_path) {
+		return Path.build_filename (get_data_dir (), rel_path);
+	}
 }
 
 }
-"""
-
-import string, sys
-
-template = string.Template(template).substitute(NS = sys.argv[1], CLASS = sys.argv[2])
-
-vfile = open('%s/%s.vala' % (sys.argv[1], sys.argv[2]), 'w')
-vfile.write(template)
-vfile.close()
