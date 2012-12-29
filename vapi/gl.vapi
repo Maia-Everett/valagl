@@ -9881,7 +9881,7 @@ namespace GL {
 	[CCode (cheader_filename = "GL/gl.h", cname = "glGetProgramSubroutineParameteruivNV")]
 	public static void glGetProgramSubroutineParameteruivNV (GL.GLenum target, GL.GLuint index, [CCode (array_length = false, array_null_terminated = true)] out unowned GL.GLuint[] param);
 	[CCode (cheader_filename = "GL/gl.h", cname = "glGetProgramiv")]
-	public static void glGetProgramiv (GL.GLuint program, GL.GLenum pname, [CCode (array_length = false, array_null_terminated = true)] out unowned GL.GLint[] @params);
+	public static void glGetProgramiv (GL.GLuint program, GL.GLenum pname, out GL.GLint params);
 	[CCode (cheader_filename = "GL/gl.h", cname = "glGetProgramivARB")]
 	public static void glGetProgramivARB (GL.GLenum target, GL.GLenum pname, [CCode (array_length = false)] out unowned GL.GLint[] @params);
 	[CCode (cheader_filename = "GL/gl.h", cname = "glGetProgramivNV")]
@@ -9933,7 +9933,7 @@ namespace GL {
 	[CCode (cheader_filename = "GL/gl.h", cname = "glGetShaderSourceARB")]
 	public static void glGetShaderSourceARB (GL.GLhandleARB obj, GL.GLsizei maxLength, [CCode (array_length = false)] out unowned GL.GLsizei[] length, [CCode (array_length = false, array_null_terminated = true)] out unowned GL.GLcharARB[] source);
 	[CCode (cheader_filename = "GL/gl.h", cname = "glGetShaderiv")]
-	public static void glGetShaderiv (GL.GLuint shader, GL.GLenum pname, [CCode (array_length = false, array_null_terminated = true)] out unowned GL.GLint[] @params);
+	public static void glGetShaderiv (GL.GLuint shader, GL.GLenum pname, out GL.GLint params);
 	[CCode (cheader_filename = "GL/gl.h", cname = "glGetSharpenTexFuncSGIS")]
 	public static void glGetSharpenTexFuncSGIS (GL.GLenum target, [CCode (array_length = false, array_null_terminated = true)] out unowned GL.GLfloat[] points);
 	[CCode (cheader_filename = "GL/gl.h", cname = "glGetString")]
@@ -11597,7 +11597,7 @@ namespace GL {
 	[CCode (cheader_filename = "GL/gl.h", cname = "glShaderOp3EXT")]
 	public static void glShaderOp3EXT (GL.GLenum op, GL.GLuint res, GL.GLuint arg1, GL.GLuint arg2, GL.GLuint arg3);
 	[CCode (cheader_filename = "GL/gl.h", cname = "glShaderSource")]
-	public static void glShaderSource (GL.GLuint shader, GL.GLsizei count, [CCode (array_length = false, array_null_terminated = true)] GL.GLchar[]? string, [CCode (array_length = false)] GL.GLint[]? length);
+	public static void glShaderSource (GL.GLuint shader, GL.GLsizei count, [CCode (array_length = false)] string[] str, [CCode (array_length = false)] GL.GLint[]? length);
 	[CCode (cheader_filename = "GL/gl.h", cname = "glShaderSourceARB")]
 	public static void glShaderSourceARB (GL.GLhandleARB shaderObj, GL.GLsizei count, [CCode (array_length = false, array_null_terminated = true)] GL.GLcharARB[]? string, [CCode (array_length = false)] GL.GLint[]? length);
 	[CCode (cheader_filename = "GL/gl.h", cname = "glSharpenTexFuncSGIS")]

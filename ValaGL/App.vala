@@ -27,22 +27,20 @@ namespace ValaGL {
 
 public class App : GLib.Object {
 	private unowned SDL.Screen screen;
-	private GLib.Rand rand;
 	private bool done;
-	
 	private Canvas canvas;
 
-	public App () {
-		this.rand = new GLib.Rand ();
-	}
-
 	public void run () throws AppError {
-		done = true;
-		init_video ();
+		try {
+			init_video ();
 
-		while (!done) {
-			process_events ();
-			draw ();
+			while (!done) {
+				process_events ();
+				draw ();
+			}
+		} finally {
+			// Free the canvas and associated GL resources
+			canvas = null;
 		}
 	}
 
@@ -55,21 +53,18 @@ public class App : GLib.Object {
 		SDL.GL.set_attribute (GLattr.DOUBLEBUFFER, 1);
 		
 		uint32 video_flags = SurfaceFlag.OPENGL | SurfaceFlag.FULLSCREEN;
-		this.screen = Screen.set_video_mode (0, 0, 32, video_flags);
+		screen = Screen.set_video_mode (0, 0, 32, video_flags);
 		
-		if (this.screen == null) {
+		if (screen == null) {
 			throw new AppError.INIT ("Could not set video mode");
 		}
 
 		SDL.WindowManager.set_caption ("Vala OpenGL Skeletal Application", "");
 		canvas = new Canvas();
-		
-		// Initialization successful if we got here
-		done = false;
 	}
 
 	private void draw () {
-		canvas.paintGL ();
+		canvas.paint_gl ();
 		SDL.GL.swap_buffers ();
 	}
 
@@ -78,10 +73,10 @@ public class App : GLib.Object {
 		while (Event.poll (out event) == 1) {
 			switch (event.type) {
 			case EventType.QUIT:
-				this.done = true;
+				done = true;
 				break;
 			case EventType.KEYDOWN:
-				this.on_keyboard_event (event.key);
+				on_keyboard_event (event.key);
 				break;
 			}
 		}
@@ -90,22 +85,25 @@ public class App : GLib.Object {
 	private void on_keyboard_event (KeyboardEvent event) {
 		switch (event.keysym.sym) {
 		case KeySymbol.ESCAPE:
+			// Close on Esc
 			on_quit();
 			break;
 		case KeySymbol.F4:
+			// Close on Alt-F4
 			if ((event.keysym.mod & KeyModifier.LALT) != 0 || (event.keysym.mod & KeyModifier.RALT) != 0) {
 				on_quit();
 			}
 			
 			break;
 		case KeySymbol.TAB:
+			// Handle Alt-Tab (it won't be passed to the OS because SDL grabs keyboard input)
 			if ((event.keysym.mod & KeyModifier.LALT) != 0 || (event.keysym.mod & KeyModifier.RALT) != 0) {
 				SDL.WindowManager.iconify ();
 			}
 			
 			break;
 		default:
-			// TODO: Handle other keyboard combinations
+			// Insert any other keyboard combinations here.
 			break;
 		}
 	}

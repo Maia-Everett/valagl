@@ -23,10 +23,13 @@
 
 using GL;
 using GLEW;
+using ValaGL.Core;
 
 namespace ValaGL {
 
 public class Canvas : Object {
+	private GLProgram gl_program;
+	
 	public Canvas () throws AppError {
 		// GL initialization comes here
 		if (glewInit () != 0) {
@@ -37,9 +40,16 @@ public class Canvas : Object {
 		glEnable (GL_DEPTH_TEST);
 		glEnable (GL_BLEND);
 		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		
+		try {
+			gl_program = new GLProgram (Util.data_file_path ("shaders/vertex.glsl"),
+										Util.data_file_path ("shaders/fragment.glsl"));
+		} catch (CoreError e) {
+			throw new AppError.INIT (e.message);
+		}
 	}
 	
-	public void paintGL () {
+	public void paint_gl () {
 		glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 }
