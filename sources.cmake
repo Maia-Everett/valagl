@@ -1,6 +1,7 @@
 set(VALAGL_CORE_CLASSES
 	CoreError
 	GLProgram
+	MatrixMath
 	Util
 	VBO
 )
