@@ -35,6 +35,7 @@ private const GLfloat[] triangle_vertices = {
 
 public class Canvas : Object {
 	private GLProgram gl_program;
+	private VBO triangle_vbo;
 	private GLint attr_coord2d;
 	
 	public Canvas () throws AppError {
@@ -51,6 +52,8 @@ public class Canvas : Object {
 		try {
 			gl_program = new GLProgram (Util.data_file_path ("shaders/vertex.glsl"),
 										Util.data_file_path ("shaders/fragment.glsl"));
+			
+			triangle_vbo = new VBO(triangle_vertices);
 		} catch (CoreError e) {
 			throw new AppError.INIT (e.message);
 		}
@@ -65,8 +68,9 @@ public class Canvas : Object {
 		gl_program.make_current ();
 		
 		// Draw a simple triangle
+		triangle_vbo.make_current ();
 		glEnableVertexAttribArray (attr_coord2d);
-		glVertexAttribPointer (attr_coord2d, 2, GL_FLOAT, (GLboolean) GL_FALSE, 0, (GLvoid[]) triangle_vertices);
+		glVertexAttribPointer (attr_coord2d, 2, GL_FLOAT, (GLboolean) GL_FALSE, 0, null);
 		glDrawArrays (GL_TRIANGLES, 0, 3);
 		glDisableVertexAttribArray (attr_coord2d);
 	}

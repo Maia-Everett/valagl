@@ -1,5 +1,5 @@
 /*
-    CoreError.vala
+    VBO.vala
     Copyright (C) 2012 Maia Kozheva <sikon@ubuntu.com>
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -21,11 +21,38 @@
     THE SOFTWARE.
 */
 
+using GL;
+
 namespace ValaGL.Core {
 
-public errordomain CoreError {
-	SHADER_INIT,
-	VBO_INIT
+public class VBO : Object {
+	private GLuint id;
+	
+	public VBO (GLfloat[] data) throws CoreError {
+		GLuint[] id_array = new GLuint[1];
+		glGenBuffers (1, id_array);
+		id = id_array[0];
+		
+		if (id == 0) {
+			throw new CoreError.VBO_INIT ("Cannot allocate vertex buffer object");
+		}
+		
+		glBindBuffer (GL_ARRAY_BUFFER, id);
+		glBufferData (GL_ARRAY_BUFFER, triangle_vertices.length * sizeof (GLfloat), (GLvoid[]) triangle_vertices,
+					   GL_STATIC_DRAW);
+		glBindBuffer (GL_ARRAY_BUFFER, 0);
+	}
+	
+	public void make_current () {
+		glBindBuffer(GL_ARRAY_BUFFER, id);
+	}
+	
+	~VBO () {
+		if (id != 0) {
+			GLuint[] id_array = { id };
+			glDeleteBuffers (1, id_array);
+		}
+	}
 }
 
 }

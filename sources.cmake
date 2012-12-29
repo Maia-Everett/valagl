@@ -2,6 +2,7 @@ set(VALAGL_CORE_CLASSES
 	CoreError
 	GLProgram
 	Util
+	VBO
 )
 
 foreach(CLASS ${VALAGL_CORE_CLASSES})
