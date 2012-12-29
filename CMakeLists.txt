@@ -18,11 +18,12 @@ set(GTK_REQUIRED_VERSION 3.0.0)
 find_package(PkgConfig REQUIRED)
 find_package(Vala REQUIRED)
 find_package(GLib REQUIRED)
+find_package(SDL REQUIRED)
 find_package(ExtraDeps REQUIRED)
 
 include(ValaVersion)
 include(ValaPrecompile)
-include(GSettings)
+#include(GSettings)
 #include(Po)
 include(sources)
 
@@ -37,16 +38,19 @@ set(CUSTOM_VAPIS
 	#${CMAKE_SOURCE_DIR}/vapi/AppConfig.vapi
 	${CMAKE_SOURCE_DIR}/vapi/glew.vapi
 	${CMAKE_SOURCE_DIR}/vapi/gl.vapi
+	${CMAKE_SOURCE_DIR}/vapi/glu.vapi
 )
 
 set(VALA_PACKAGES
 	gee-1.0
 	gio-2.0
 	glib-2.0
+	sdl
+	sdl-gfx
 )
 
 vala_precompile(VALA_C
-	${${CMAKE_PROJECT_NAME}_SOURCES}
+	${VALAGL_SOURCES}
 CUSTOM_VAPIS
 	${CUSTOM_VAPIS}
 PACKAGES
@@ -56,12 +60,12 @@ PACKAGES
 # Generate .mo from .po
 # compile_po_files(${CMAKE_SOURCE_DIR}/po LOCALE_FILES)
 
-include_directories(${GTK3_ALL_INCLUDES} ${EXTRA_DEP_INCLUDES} ${CMAKE_BINARY_DIR})
-add_definitions(${GTK3_ALL_CFLAGS} ${EXTRA_DEP_CFLAGS}
+include_directories(${GLIB_ALL_INCLUDES} ${SDL_INCLUDE_DIR} ${EXTRA_DEP_INCLUDES} ${CMAKE_BINARY_DIR})
+add_definitions(${GLIB_ALL_CFLAGS} ${EXTRA_DEP_CFLAGS}
 	-DGETTEXT_PACKAGE=\"${CMAKE_PROJECT_NAME}\"
 )
 
 add_executable(${CMAKE_PROJECT_NAME} ${VALA_C})
-target_link_libraries(${CMAKE_PROJECT_NAME} ${GLIB_ALL_LIBS} ${EXTRA_DEP_LIBS})
+target_link_libraries(${CMAKE_PROJECT_NAME} ${GLIB_ALL_LIBS} ${SDL_LIBRARY} ${EXTRA_DEP_LIBS})
 
 include(install)
