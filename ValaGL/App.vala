@@ -73,16 +73,24 @@ public class App : GLib.Object {
 
 	private void process_events () {
 		Event event;
+		
 		while (Event.poll (out event) == 1) {
 			switch (event.type) {
 			case EventType.QUIT:
 				done = true;
+				break;
+			case EventType.VIDEORESIZE:
+				on_resize_event (event.resize);
 				break;
 			case EventType.KEYDOWN:
 				on_keyboard_event (event.key);
 				break;
 			}
 		}
+	}
+	
+	private void on_resize_event (ResizeEvent event) {
+		canvas.resize_gl (event.w, event.h);
 	}
 
 	private void on_keyboard_event (KeyboardEvent event) {

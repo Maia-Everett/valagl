@@ -61,6 +61,10 @@ public class Canvas : Object {
 		attr_coord2d = gl_program.get_attrib_location ("coord2d");
 	}
 	
+	public void resize_gl (uint width, uint height) {
+		glViewport(0, 0, (GLsizei) width, (GLsizei) height);
+	}
+	
 	public void paint_gl () {
 		glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
