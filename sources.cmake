@@ -1,5 +1,6 @@
 set(VALAGL_CORE_CLASSES
 	CoreError
+	GLProgram
 	Util
 )
 
