@@ -39,6 +39,15 @@ public struct Vec3 {
 	}
 	
 	/**
+	 * Creates a vector whose contents are the copy of the given data.
+	 */
+	public Vec3.from_data (GLfloat x, GLfloat y, GLfloat z) {
+		data[0] = x;
+		data[1] = y;
+		data[2] = z;
+	}
+	
+	/**
 	 * Creates a vector whose contents are the copy of the given array.
 	 */
 	public Vec3.from_array ([CCode (array_length = false)] GLfloat[] data) {
@@ -50,7 +59,7 @@ public struct Vec3 {
 	/**
 	 * Adds the given vector, component-wise.
 	 */
-	public void add (Vec3 other) {
+	public void add (ref Vec3 other) {
 		data[0] += other.data[0];
 		data[1] += other.data[1];
 		data[2] += other.data[2];
@@ -59,7 +68,7 @@ public struct Vec3 {
 	/**
 	 * Subtracts the given vector, component-wise.
 	 */
-	public void sub (Vec3 other) {
+	public void sub (ref Vec3 other) {
 		data[0] -= other.data[0];
 		data[1] -= other.data[1];
 		data[2] -= other.data[2];
@@ -68,7 +77,7 @@ public struct Vec3 {
 	/**
 	 * Multiplies the given vector, component-wise.
 	 */
-	public void mul (Vec3 other) {
+	public void mul_vec (ref Vec3 other) {
 		data[0] *= other.data[0];
 		data[1] *= other.data[1];
 		data[2] *= other.data[2];
@@ -77,10 +86,81 @@ public struct Vec3 {
 	/**
 	 * Divides the given vector, component-wise.
 	 */
-	public void div (Vec3 other) {
+	public void div_vec (ref Vec3 other) {
 		data[0] /= other.data[0];
 		data[1] /= other.data[1];
 		data[2] /= other.data[2];
+	}
+	
+	/**
+	 * Computes the dot product of this vector and the other vector.
+	 */
+	public GLfloat dot_product (ref Vec3 other) {
+		return data[0] * other.data[0] + data[1] * other.data[1] + data[2] * other.data[2];
+	}
+	
+	/**
+	 * Computes the cross product of this vector and the other vector.
+	 */
+	public Vec3 cross_product (ref Vec3 other) {
+		return Vec3.from_data(
+			data[1] * other.data[2] - data[2] * other.data[1],
+			data[2] * other.data[0] - data[0] * other.data[2],
+			data[0] * other.data[1] - data[1] * other.data[0]);
+	}
+	
+	/**
+	 * Multiplies the vector by the given scalar.
+	 */
+	public void mul (GLfloat factor) {
+		data[0] *= factor;
+		data[1] *= factor;
+		data[2] *= factor;
+	}
+	
+	/**
+	 * Divides the vector by the given scalar.
+	 */
+	public void div (GLfloat factor) {
+		data[0] /= factor;
+		data[1] /= factor;
+		data[2] /= factor;
+	}
+	
+	/**
+	 * Computes the norm of this vector.
+	 */
+	public GLfloat norm () {
+		return Math.sqrtf (dot_product (ref this));
+	}
+
+	/**
+	 * Normalizes this vector, dividing it by its norm.
+	 * If the norm is zero, the result is undefined.
+	*/
+	public void normalize () {
+		div (norm ());
+	}
+	
+	/**
+	 * Convenience accessor for data[0].
+	 */
+	public GLfloat x {
+		get { return data[0]; }
+	}
+	
+	/**
+	 * Convenience accessor for data[1].
+	 */
+	public GLfloat y {
+		get { return data[1]; }
+	}
+	
+	/**
+	 * Convenience accessor for data[2].
+	 */
+	public GLfloat z {
+		get { return data[2]; }
 	}
 }
 
@@ -98,6 +178,16 @@ public struct Vec4 {
 	}
 	
 	/**
+	 * Creates a vector whose contents are the copy of the given data.
+	 */
+	public Vec4.from_data (GLfloat x, GLfloat y, GLfloat z, GLfloat w) {
+		data[0] = x;
+		data[1] = y;
+		data[2] = z;
+		data[3] = w;
+	}
+	
+	/**
 	 * Creates a vector whose contents are the copy of the given array.
 	 */
 	public Vec4.from_array ([CCode (array_length = false)] GLfloat[] data) {
@@ -108,9 +198,19 @@ public struct Vec4 {
 	}
 	
 	/**
+	 * Expands a 3x3 vector plus scalar into a 4x4 vector.
+	 */
+	public Vec4.expand (ref Vec3 vec3, GLfloat w) {
+		this.data[0] = vec3.data[0];
+		this.data[1] = vec3.data[1];
+		this.data[2] = vec3.data[2];
+		this.data[3] = w;
+	}
+	
+	/**
 	 * Adds the given vector, component-wise.
 	 */
-	public void add (Vec4 other) {
+	public void add (ref Vec4 other) {
 		data[0] += other.data[0];
 		data[1] += other.data[1];
 		data[2] += other.data[2];
@@ -120,7 +220,7 @@ public struct Vec4 {
 	/**
 	 * Subtracts the given vector, component-wise.
 	 */
-	public void sub (Vec4 other) {
+	public void sub (ref Vec4 other) {
 		data[0] -= other.data[0];
 		data[1] -= other.data[1];
 		data[2] -= other.data[2];
@@ -130,7 +230,7 @@ public struct Vec4 {
 	/**
 	 * Multiplies the given vector, component-wise.
 	 */
-	public void mul (Vec4 other) {
+	public void mul_vec (ref Vec4 other) {
 		data[0] *= other.data[0];
 		data[1] *= other.data[1];
 		data[2] *= other.data[2];
@@ -140,11 +240,83 @@ public struct Vec4 {
 	/**
 	 * Divides the given vector, component-wise.
 	 */
-	public void div (Vec4 other) {
+	public void div_vec (ref Vec4 other) {
 		data[0] /= other.data[0];
 		data[1] /= other.data[1];
 		data[2] /= other.data[2];
 		data[3] /= other.data[3];
+	}
+	
+	/**
+	 * Computes the dot product of this vector and the other vector.
+	 */
+	public GLfloat dot_product (ref Vec4 other) {
+		return data[0] * other.data[0] + data[1] * other.data[1]
+			 + data[2] * other.data[2] + data[3] * other.data[3];
+	}
+	
+	
+	/**
+	 * Multiplies the vector by the given scalar.
+	 */
+	public void mul (GLfloat factor) {
+		data[0] *= factor;
+		data[1] *= factor;
+		data[2] *= factor;
+		data[3] *= factor;
+	}
+	
+	/**
+	 * Divides the vector by the given scalar.
+	 */
+	public void div (GLfloat factor) {
+		data[0] /= factor;
+		data[1] /= factor;
+		data[2] /= factor;
+		data[3] /= factor;
+	}
+	
+	/**
+	 * Computes the norm of this vector.
+	 */
+	public GLfloat norm () {
+		return Math.sqrtf (dot_product(ref this));
+	}
+
+	/**
+	 * Normalizes this vector, dividing it by its norm.
+	 * If the norm is zero, the result is undefined.
+	*/
+	public void normalize () {
+		div (norm ());
+	}
+	
+	/**
+	 * Convenience accessor for data[0].
+	 */
+	public GLfloat x {
+		get { return data[0]; }
+	}
+	
+	/**
+	 * Convenience accessor for data[1].
+	 */
+	public GLfloat y {
+		get { return data[1]; }
+	}
+	
+	/**
+	 * Convenience accessor for data[2].
+	 */
+	public GLfloat z {
+		get { return data[2]; }
+	}
+	
+	/**
+	 * Convenience accessor for data[3].
+	 */
+	public GLfloat w {
+		get { return data[3]; }
 	}
 }
 
@@ -159,6 +331,44 @@ public struct Mat3 {
 	 */
 	public Mat3() {
 		
+	}
+	
+	/**
+	 * Creates a matrix whose contents are the copy of the given data.
+	 * Warning: the data are specified in column-first-index order, which is different from
+	 * the internal storage format (row-first-index).
+	 */
+	public Mat3.from_data (GLfloat a11, GLfloat a12, GLfloat a13,
+							GLfloat a21, GLfloat a22, GLfloat a23,
+							GLfloat a31, GLfloat a32, GLfloat a33) {
+		data[0] = a11;
+		data[1] = a21;
+		data[2] = a31;
+		
+		data[3] = a12;
+		data[4] = a22;
+		data[5] = a32;
+		
+		data[6] = a13;
+		data[7] = a23;
+		data[8] = a33;
+	}
+	
+	/**
+	 * Given two vectors a and b, computes a matrix equal to a * bT.
+	 */
+	public Mat3.from_vec_mul (ref Vec3 a, ref Vec3 b) {
+		data[0] = a.data[0] * b.data[0];
+		data[1] = a.data[1] * b.data[0];
+		data[2] = a.data[2] * b.data[0];
+		
+		data[3] = a.data[0] * b.data[1];
+		data[4] = a.data[1] * b.data[1];
+		data[5] = a.data[2] * b.data[1];
+		
+		data[6] = a.data[0] * b.data[2];
+		data[7] = a.data[1] * b.data[2];
+		data[8] = a.data[2] * b.data[2];
 	}
 	
 	/**
@@ -180,7 +390,7 @@ public struct Mat3 {
 	/**
 	 * Adds the given matrix, component-wise.
 	 */
-	public void add (Mat3 other) {
+	public void add (ref Mat3 other) {
 		for (int i = 0; i < 9; i++) {
 			data[i] += other.data[i];
 		}
@@ -189,16 +399,34 @@ public struct Mat3 {
 	/**
 	 * Subtracts the given matrix, component-wise.
 	 */
-	public void sub (Mat3 other) {
+	public void sub (ref Mat3 other) {
 		for (int i = 0; i < 9; i++) {
 			data[i] -= other.data[i];
 		}
 	}
 	
 	/**
+	 * Multiplies the matrix by the given scalar, component-wise.
+	 */
+	public void mul (GLfloat factor) {
+		for (int i = 0; i < 9; i++) {
+			data[i] *= factor;
+		}
+	}
+	
+	/**
+	 * Divides the matrix by the given scalar, component-wise.
+	 */
+	public void div (GLfloat factor) {
+		for (int i = 0; i < 9; i++) {
+			data[i] /= factor;
+		}
+	}
+	
+	/**
 	 * Multiplies the given matrix using the linear algebra definition of matrix multiplication.
 	 */
-	public void mul_mat (Mat3 other) {
+	public void mul_mat (ref Mat3 other) {
 		float res[9]; // Zero initialized
 		
 		for (int i = 0; i < 3; i++) {
@@ -217,7 +445,7 @@ public struct Mat3 {
 	/**
 	 * Multiplies this matrix by the given vector and returns the result as a new vector.
 	 */
-	public Vec3 mul_vec (Vec3 vec) {
+	public Vec3 mul_vec (ref Vec3 vec) {
 		Vec3 res = Vec3(); // Zero initialized
 		
 		for (int i = 0; i < 3; i++) {
@@ -307,6 +535,61 @@ public struct Mat4 {
 	}
 	
 	/**
+	 * Creates a matrix whose contents are the copy of the given data.
+	 * Warning: the data are specified in column-first-index order, which is different from
+	 * the internal storage format (row-first-index).
+	 */
+	public Mat4.from_data (GLfloat a11, GLfloat a12, GLfloat a13, GLfloat a14,
+							GLfloat a21, GLfloat a22, GLfloat a23, GLfloat a24,
+							GLfloat a31, GLfloat a32, GLfloat a33, GLfloat a34,
+							GLfloat a41, GLfloat a42, GLfloat a43, GLfloat a44) {
+		data[0]  = a11;
+		data[1]  = a21;
+		data[2]  = a31;
+		data[3]  = a41;
+		
+		data[4]  = a12;
+		data[5]  = a22;
+		data[6]  = a32;
+		data[7]  = a42;
+		
+		data[8]  = a13;
+		data[9]  = a23;
+		data[10] = a33;
+		data[11] = a43;
+		
+		data[12] = a14;
+		data[13] = a24;
+		data[14] = a34;
+		data[15] = a44;
+	}
+	
+	/**
+	 * Given two vectors a and b, computes a matrix equal to a * bT.
+	 */
+	public Mat4.from_vec_mul (ref Vec4 a, ref Vec4 b) {
+		data[0]  = a.data[0] * b.data[0];
+		data[1]  = a.data[1] * b.data[0];
+		data[2]  = a.data[2] * b.data[0];
+		data[3]  = a.data[3] * b.data[0];
+
+		data[4]  = a.data[0] * b.data[1];
+		data[5]  = a.data[1] * b.data[1];
+		data[6]  = a.data[2] * b.data[1];
+		data[7]  = a.data[3] * b.data[1];
+
+		data[8]  = a.data[0] * b.data[2];
+		data[9]  = a.data[1] * b.data[2];
+		data[10] = a.data[2] * b.data[2];
+		data[11] = a.data[3] * b.data[2];
+
+		data[12] = a.data[0] * b.data[3];
+		data[13] = a.data[1] * b.data[3];
+		data[14] = a.data[2] * b.data[3];
+		data[15] = a.data[3] * b.data[3];
+	}
+	
+	/**
 	 * Creates a matrix whose contents are the copy of the given array, assumed to have at least 16 elements.
 	 */
 	public Mat4.from_array ([CCode (array_length = false)] GLfloat[] data) {
@@ -322,11 +605,33 @@ public struct Mat4 {
 		data[2 * 4 + 2] = 1;
 		data[3 * 4 + 3] = 1;
 	}
+	
+	/**
+	 * Creates an expansion of the given 3x3 matrix into 4x4:
+	 * 
+	 * A 0
+	 * 0 1
+	 */
+	public Mat4.expand (ref Mat3 mat3) {
+		data[0]  = mat3.data[0];
+		data[1]  = mat3.data[1];
+		data[2]  = mat3.data[2];
+		
+		data[4]  = mat3.data[3];
+		data[5]  = mat3.data[4];
+		data[6]  = mat3.data[5];
+		
+		data[8]  = mat3.data[6];
+		data[9]  = mat3.data[7];
+		data[10] = mat3.data[8];
+		
+		data[3 * 4 + 3] = 1;
+	}
 		
 	/**
 	 * Adds the given matrix, component-wise.
 	 */
-	public void add (Mat4 other) {
+	public void add (ref Mat4 other) {
 		for (int i = 0; i < 16; i++) {
 			data[i] += other.data[i];
 		}
@@ -335,16 +640,34 @@ public struct Mat4 {
 	/**
 	 * Subtracts the given matrix, component-wise.
 	 */
-	public void sub (Mat4 other) {
+	public void sub (ref Mat4 other) {
 		for (int i = 0; i < 16; i++) {
 			data[i] -= other.data[i];
 		}
 	}
 	
 	/**
+	 * Multiplies the matrix by the given scalar, component-wise.
+	 */
+	public void mul (GLfloat factor) {
+		for (int i = 0; i < 16; i++) {
+			data[i] *= factor;
+		}
+	}
+	
+	/**
+	 * Divides the matrix by the given scalar, component-wise.
+	 */
+	public void div (GLfloat factor) {
+		for (int i = 0; i < 16; i++) {
+			data[i] /= factor;
+		}
+	}
+	
+	/**
 	 * Multiplies the given matrix using the linear algebra definition of matrix multiplication.
 	 */
-	public void mul_mat (Mat4 other) {
+	public void mul_mat (ref Mat4 other) {
 		float res[16]; // Zero initialized
 		
 		for (int i = 0; i < 4; i++) {
@@ -363,7 +686,7 @@ public struct Mat4 {
 	/**
 	 * Multiplies this matrix by the given vector and returns the result as a new vector.
 	 */
-	public Vec4 mul_vec (Vec4 vec) {
+	public Vec4 mul_vec (ref Vec4 vec) {
 		Vec4 res = Vec4(); // Zero initialized
 		
 		for (int i = 0; i < 4; i++) {

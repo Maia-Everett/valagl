@@ -71,6 +71,11 @@ public class GLProgram : Object {
 		return glGetAttribLocation (prog_id, (GLchar[]) name.data);
 	}
 	
+	public GLint get_uniform_location (string name) {
+		assert (prog_id != 0);
+		return glGetUniformLocation (prog_id, (GLchar[]) name.data);
+	}
+	
 	public void make_current () {
 		assert (prog_id != 0);
 		glUseProgram (prog_id);

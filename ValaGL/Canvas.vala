@@ -27,16 +27,21 @@ using ValaGL.Core;
 
 namespace ValaGL {
 
-private const GLfloat[] triangle_vertices = {
-	-0.8f,  0.8f,
-	 0.8f,  0.0f,
-	-0.8f, -0.8f,
+private const GLfloat[] quad_vertices = {
+	-1, -1, 0,
+	-1,  1, 0,
+	 1,  1, 0,
+	 1, -1, 0,
 };
 
 public class Canvas : Object {
 	private GLProgram gl_program;
 	private VBO triangle_vbo;
-	private GLint attr_coord2d;
+	private Camera camera;
+	private Mat4 model_matrix;
+	
+	private GLint unif_transform;
+	private GLint attr_coord3d;
 	
 	public Canvas () throws AppError {
 		// GL initialization comes here
@@ -53,16 +58,29 @@ public class Canvas : Object {
 			gl_program = new GLProgram (Util.data_file_path ("shaders/vertex.glsl"),
 										Util.data_file_path ("shaders/fragment.glsl"));
 			
-			triangle_vbo = new VBO(triangle_vertices);
+			triangle_vbo = new VBO(quad_vertices);
 		} catch (CoreError e) {
 			throw new AppError.INIT (e.message);
 		}
 		
-		attr_coord2d = gl_program.get_attrib_location ("coord2d");
+		unif_transform = gl_program.get_uniform_location ("transform");
+		attr_coord3d = gl_program.get_attrib_location ("coord3d");
+		
+		camera = new Camera();
+		Vec3 eye = Vec3.from_data (0, 1, 0);
+		Vec3 center = Vec3.from_data (0, 0, -4);
+		Vec3 up = Vec3.from_data (0, 1, 0);
+		camera.look_at (ref eye, ref center, ref up);
+		
+		model_matrix = Mat4.identity ();
+		
+		Vec3 translation = Vec3.from_data (0.5f, 0.5f, -1);
+		GeometryUtil.translate (ref model_matrix, ref translation);
 	}
 	
 	public void resize_gl (uint width, uint height) {
 		glViewport(0, 0, (GLsizei) width, (GLsizei) height);
+		camera.set_perspective_projection (70, (GLfloat) width / (GLfloat) height, 0.01f, 100f);
 	}
 	
 	public void paint_gl () {
@@ -71,12 +89,14 @@ public class Canvas : Object {
 		// Activate our vertex and fragment shaders for the next drawing operations
 		gl_program.make_current ();
 		
+		// Apply camera before drawing the model
+		camera.apply (unif_transform, ref model_matrix);
+		
 		// Draw a simple triangle
-		triangle_vbo.make_current ();
-		glEnableVertexAttribArray (attr_coord2d);
-		glVertexAttribPointer (attr_coord2d, 2, GL_FLOAT, (GLboolean) GL_FALSE, 0, null);
-		glDrawArrays (GL_TRIANGLES, 0, 3);
-		glDisableVertexAttribArray (attr_coord2d);
+		glEnableVertexAttribArray (attr_coord3d);
+		triangle_vbo.apply_as_vertex_array (attr_coord3d, 3);
+		glDrawArrays (GL_QUADS, 0, 4);
+		glDisableVertexAttribArray (attr_coord3d);
 	}
 }
 

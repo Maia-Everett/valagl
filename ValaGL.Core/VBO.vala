@@ -38,13 +38,18 @@ public class VBO : Object {
 		}
 		
 		glBindBuffer (GL_ARRAY_BUFFER, id);
-		glBufferData (GL_ARRAY_BUFFER, triangle_vertices.length * sizeof (GLfloat), (GLvoid[]) triangle_vertices,
+		glBufferData (GL_ARRAY_BUFFER, data.length * sizeof (GLfloat), (GLvoid[]) data,
 					   GL_STATIC_DRAW);
 		glBindBuffer (GL_ARRAY_BUFFER, 0);
 	}
 	
 	public void make_current () {
 		glBindBuffer(GL_ARRAY_BUFFER, id);
+	}
+	
+	public void apply_as_vertex_array (GLint attribute, GLsizei stride) {
+		make_current ();
+		glVertexAttribPointer (attribute, stride, GL_FLOAT, (GLboolean) GL_FALSE, 0, null);
 	}
 	
 	~VBO () {

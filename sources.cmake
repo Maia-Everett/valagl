@@ -1,5 +1,7 @@
 set(VALAGL_CORE_CLASSES
+	Camera
 	CoreError
+	GeometryUtil
 	GLProgram
 	MatrixMath
 	Util
