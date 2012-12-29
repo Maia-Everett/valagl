@@ -1,6 +1,5 @@
-#!/usr/bin/env python
-template = """/*
-    ${CLASS}.vala
+/*
+    Canvas.vala
     Copyright (C) 2012 Maia Kozheva <sikon@ubuntu.com>
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -22,19 +21,27 @@ template = """/*
     THE SOFTWARE.
 */
 
-namespace ${NS} {
+using GL;
+using GLEW;
 
-public class ${CLASS} : Object {
+namespace ValaGL {
+
+public class Canvas : Object {
+	public Canvas () throws AppError {
+		// GL initialization comes here
+		if (glewInit () != 0) {
+			throw new AppError.INIT("Cannot initialize GLEW");
+		}
+		
+		glClearColor (71.0f/255, 95.0f/255, 121.0f/255, 1);
+		glEnable (GL_DEPTH_TEST);
+		glEnable (GL_BLEND);
+		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	}
 	
+	public void paintGL () {
+		glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	}
 }
 
 }
-"""
-
-import string, sys
-
-template = string.Template(template).substitute(NS = sys.argv[1], CLASS = sys.argv[2])
-
-vfile = open('%s/%s.vala' % (sys.argv[1], sys.argv[2]), 'w')
-vfile.write(template)
-vfile.close()

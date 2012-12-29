@@ -1,5 +1,5 @@
 project(valagl C)
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 2.8)
 
 # Change version number on release
 set(PROJECT_VERSION "0.1.0")
@@ -19,12 +19,12 @@ find_package(PkgConfig REQUIRED)
 find_package(Vala REQUIRED)
 find_package(GLib REQUIRED)
 find_package(SDL REQUIRED)
+find_package(GLEW REQUIRED)
+find_package(OpenGL REQUIRED)
 find_package(ExtraDeps REQUIRED)
 
 include(ValaVersion)
 include(ValaPrecompile)
-#include(GSettings)
-#include(Po)
 include(sources)
 
 ensure_vala_version(${VALA_REQUIRED_VERSION} MINIMUM)
@@ -35,8 +35,9 @@ configure_file(${CMAKE_SOURCE_DIR}/cmake/config.h.in ${CMAKE_BINARY_DIR}/config.
 
 set(CUSTOM_VAPIS
 	# VAPI containing install definitions, mapping from cmake generated config.h
-	#${CMAKE_SOURCE_DIR}/vapi/AppConfig.vapi
-	${CMAKE_SOURCE_DIR}/vapi/glew.vapi
+	${CMAKE_SOURCE_DIR}/vapi/AppConfig.vapi
+	# Order is important! GLEW must come before GL and GLU.
+	${CMAKE_SOURCE_DIR}/vapi/glew-minimal.vapi
 	${CMAKE_SOURCE_DIR}/vapi/gl.vapi
 	${CMAKE_SOURCE_DIR}/vapi/glu.vapi
 )
@@ -46,26 +47,38 @@ set(VALA_PACKAGES
 	gio-2.0
 	glib-2.0
 	sdl
-	sdl-gfx
 )
 
 vala_precompile(VALA_C
-	${VALAGL_SOURCES}
+	${APP_SOURCES}
 CUSTOM_VAPIS
 	${CUSTOM_VAPIS}
 PACKAGES
 	${VALA_PACKAGES}
 )
 
-# Generate .mo from .po
-# compile_po_files(${CMAKE_SOURCE_DIR}/po LOCALE_FILES)
+include_directories(
+	${GLIB_ALL_INCLUDES}
+	${SDL_INCLUDE_DIR}
+	${GLEW_INCLUDE_PATH}
+	${OPENGL_INCLUDE_DIR}
+	${EXTRA_DEP_INCLUDES}
+	${CMAKE_BINARY_DIR}
+)
 
-include_directories(${GLIB_ALL_INCLUDES} ${SDL_INCLUDE_DIR} ${EXTRA_DEP_INCLUDES} ${CMAKE_BINARY_DIR})
-add_definitions(${GLIB_ALL_CFLAGS} ${EXTRA_DEP_CFLAGS}
-	-DGETTEXT_PACKAGE=\"${CMAKE_PROJECT_NAME}\"
+add_definitions(
+	${GLIB_ALL_CFLAGS}
+	${EXTRA_DEP_CFLAGS}
 )
 
 add_executable(${CMAKE_PROJECT_NAME} ${VALA_C})
-target_link_libraries(${CMAKE_PROJECT_NAME} ${GLIB_ALL_LIBS} ${SDL_LIBRARY} ${EXTRA_DEP_LIBS})
+
+target_link_libraries(${CMAKE_PROJECT_NAME}
+	${GLIB_ALL_LIBS}
+	${SDL_LIBRARY}
+	${GLEW_LIBRARY}
+	${OPENGL_LIBRARIES}
+	${EXTRA_DEP_LIBS}
+)
 
 include(install)

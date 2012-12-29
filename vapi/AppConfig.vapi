@@ -1,7 +1,6 @@
-#!/usr/bin/env python
-template = """/*
-    ${CLASS}.vala
-    Copyright (C) 2012 Maia Kozheva <sikon@ubuntu.com>
+/*
+    AppConfig.vapi
+    Copyright (C) 2010-2012 Maia Kozheva <sikon@ubuntu.com>
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
@@ -22,19 +21,17 @@ template = """/*
     THE SOFTWARE.
 */
 
-namespace ${NS} {
-
-public class ${CLASS} : Object {
-	
+namespace ValaGL.Core.AppConfig {
+	[CCode (cheader_filename = "config.h", cname = "CMAKE_INSTALL_PREFIX")]
+	public static const string PREFIX;
+	[CCode (cheader_filename = "config.h", cname = "CMAKE_INSTALL_BIN_DIR")]
+	public static const string BIN_DIR;
+	[CCode (cheader_filename = "config.h", cname = "CMAKE_INSTALL_DATA_DIR")]
+	public static const string DATA_DIR;
+	[CCode (cheader_filename = "config.h", cname = "CMAKE_INSTALL_APP_DATA_DIR")]
+	public static const string APP_DATA_DIR;
+	[CCode (cheader_filename = "config.h", cname = "CMAKE_APP_VERSION")]
+	public static const string APP_VERSION;
+	[CCode (cheader_filename = "config.h", cname = "CMAKE_APP_AUTHORS")]
+	public static const string APP_AUTHORS;
 }
-
-}
-"""
-
-import string, sys
-
-template = string.Template(template).substitute(NS = sys.argv[1], CLASS = sys.argv[2])
-
-vfile = open('%s/%s.vala' % (sys.argv[1], sys.argv[2]), 'w')
-vfile.write(template)
-vfile.close()

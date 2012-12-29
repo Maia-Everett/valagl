@@ -1,6 +1,5 @@
-#!/usr/bin/env python
-template = """/*
-    ${CLASS}.vala
+/*
+    GLEW.vapi
     Copyright (C) 2012 Maia Kozheva <sikon@ubuntu.com>
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -21,20 +20,8 @@ template = """/*
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
     THE SOFTWARE.
 */
-
-namespace ${NS} {
-
-public class ${CLASS} : Object {
-	
+[CCode (cprefix = "GLEW", gir_namespace = "GLEW", gir_version = "1.0", lower_case_cprefix = "glew_")]
+namespace GLEW {
+	[CCode (cheader_filename = "GL/glew.h", cname = "glewInit")]
+	public static uint glewInit ();
 }
-
-}
-"""
-
-import string, sys
-
-template = string.Template(template).substitute(NS = sys.argv[1], CLASS = sys.argv[2])
-
-vfile = open('%s/%s.vala' % (sys.argv[1], sys.argv[2]), 'w')
-vfile.write(template)
-vfile.close()

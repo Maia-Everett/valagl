@@ -2,18 +2,23 @@
     App.vala
     Copyright (C) 2012 Maia Kozheva <sikon@ubuntu.com>
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+    
+    The above copyright notice and this permission notice shall be included in
+    all copies or substantial portions of the Software.
+    
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+    THE SOFTWARE.
 */
 
 using SDL;
@@ -24,12 +29,14 @@ public class App : GLib.Object {
 	private unowned SDL.Screen screen;
 	private GLib.Rand rand;
 	private bool done;
+	
+	private Canvas canvas;
 
 	public App () {
 		this.rand = new GLib.Rand ();
 	}
 
-	public void run () {
+	public void run () throws AppError {
 		done = true;
 		init_video ();
 
@@ -39,7 +46,7 @@ public class App : GLib.Object {
 		}
 	}
 
-	private void init_video () {
+	private void init_video () throws AppError {
 		SDL.GL.set_attribute (GLattr.RED_SIZE, 8);
 		SDL.GL.set_attribute (GLattr.GREEN_SIZE, 8);
 		SDL.GL.set_attribute (GLattr.BLUE_SIZE, 8);
@@ -51,19 +58,18 @@ public class App : GLib.Object {
 		this.screen = Screen.set_video_mode (0, 0, 32, video_flags);
 		
 		if (this.screen == null) {
-			stderr.printf ("Could not set video mode.\n");
-			return;
+			throw new AppError.INIT ("Could not set video mode");
 		}
 
-		SDL.WindowManager.set_caption ("Vala SDL Demo", "");
-		GL.glClearColor (71.0f/255, 95.0f/255, 121.0f/255, 1);
+		SDL.WindowManager.set_caption ("Vala OpenGL Skeletal Application", "");
+		canvas = new Canvas();
 		
 		// Initialization successful if we got here
 		done = false;
 	}
 
 	private void draw () {
-		GL.glClear (GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
+		canvas.paintGL ();
 		SDL.GL.swap_buffers ();
 	}
 
@@ -113,9 +119,15 @@ public class App : GLib.Object {
 	public static int main (string[] args) {
 		SDL.init (InitFlag.VIDEO);
 
-		var app = new App ();
-		app.run ();
-		SDL.quit ();
+		try {
+			new App ().run ();
+		} catch (AppError e) {
+			stderr.printf("Fatal error: %s\n", e.message);
+			return 1;
+		} finally {
+			SDL.quit ();
+		}
+		
 		return 0;
 	}
 }

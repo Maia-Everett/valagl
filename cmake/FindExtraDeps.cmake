@@ -8,5 +8,3 @@ if(GEE_FOUND)
 else()
     message(FATAL_ERROR "libgee not found")
 endif()
-
-set(EXTRA_DEP_LIBS -lSDL_gfx -lGLEW -lGL -lGLU)

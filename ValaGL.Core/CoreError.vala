@@ -1,6 +1,5 @@
-#!/usr/bin/env python
-template = """/*
-    ${CLASS}.vala
+/*
+    CoreError.vala
     Copyright (C) 2012 Maia Kozheva <sikon@ubuntu.com>
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -22,19 +21,10 @@ template = """/*
     THE SOFTWARE.
 */
 
-namespace ${NS} {
+namespace ValaGL.Core {
 
-public class ${CLASS} : Object {
-	
+public errordomain CoreError {
+	SHADER_INIT
 }
 
 }
-"""
-
-import string, sys
-
-template = string.Template(template).substitute(NS = sys.argv[1], CLASS = sys.argv[2])
-
-vfile = open('%s/%s.vala' % (sys.argv[1], sys.argv[2]), 'w')
-vfile.write(template)
-vfile.close()
