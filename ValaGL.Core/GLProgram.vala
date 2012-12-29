@@ -66,6 +66,16 @@ public class GLProgram : Object {
 		}
 	}
 	
+	public GLint get_attrib_location (string name) {
+		assert (prog_id != 0);
+		return glGetAttribLocation (prog_id, (GLchar[]) name.data);
+	}
+	
+	public void make_current () {
+		assert (prog_id != 0);
+		glUseProgram (prog_id);
+	}
+	
 	private static GLuint create_shader_from_file (GLuint shader_type, string file_path) throws CoreError {
 		try {
 			uint8[] file_contents;
