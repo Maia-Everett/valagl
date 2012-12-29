@@ -26,7 +26,7 @@ using SDL;
 namespace ValaGL {
 
 public class App : GLib.Object {
-	private unowned SDL.Screen screen;
+	private unowned Screen screen;
 	private bool done;
 	private Canvas canvas;
 
@@ -52,6 +52,9 @@ public class App : GLib.Object {
 		SDL.GL.set_attribute (GLattr.DEPTH_SIZE, 24);
 		SDL.GL.set_attribute (GLattr.DOUBLEBUFFER, 1);
 		
+		// Enter fullscreen mode.
+		// Note: Under X, this grabs all input and confines it to the application fullscreen window.
+		// Therefore, we have to manually handle at least Alt-F4 and Alt-Tab, which we do in the keyboard handler.
 		uint32 video_flags = SurfaceFlag.OPENGL | SurfaceFlag.FULLSCREEN;
 		screen = Screen.set_video_mode (0, 0, 32, video_flags);
 		
