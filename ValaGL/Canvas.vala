@@ -27,8 +27,15 @@ using ValaGL.Core;
 
 namespace ValaGL {
 
+private const GLfloat[] triangle_vertices = {
+	-0.8f,  0.8f,
+	 0.8f,  0.0f,
+	-0.8f, -0.8f,
+};
+
 public class Canvas : Object {
 	private GLProgram gl_program;
+	private GLint attr_coord2d;
 	
 	public Canvas () throws AppError {
 		// GL initialization comes here
@@ -47,10 +54,21 @@ public class Canvas : Object {
 		} catch (CoreError e) {
 			throw new AppError.INIT (e.message);
 		}
+		
+		attr_coord2d = gl_program.get_attrib_location ("coord2d");
 	}
 	
 	public void paint_gl () {
 		glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		
+		// Activate our vertex and fragment shaders for the next drawing operations
+		gl_program.make_current ();
+		
+		// Draw a simple triangle
+		glEnableVertexAttribArray (attr_coord2d);
+		glVertexAttribPointer (attr_coord2d, 2, GL_FLOAT, (GLboolean) GL_FALSE, 0, (GLvoid[]) triangle_vertices);
+		glDrawArrays (GL_TRIANGLES, 0, 3);
+		glDisableVertexAttribArray (attr_coord2d);
 	}
 }
 

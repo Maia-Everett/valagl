@@ -18,9 +18,12 @@
  *
  * Author:
  * 	Matias De la Puente <mfpuente.ar@gmail.com>
+ *
+ * Modified by Maia Everett <maia@everett.one>:
+ * - use glew.h instead of glu.h
  */
  
-[CCode (lower_case_cprefix ="", cheader_filename="GL/glu.h")]
+[CCode (lower_case_cprefix ="", cheader_filename="GL/glew.h")]
 namespace GLU
 {
 	// Extensions
