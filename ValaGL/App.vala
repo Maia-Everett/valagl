@@ -64,6 +64,10 @@ public class App : GLib.Object {
 
 		SDL.WindowManager.set_caption ("Vala OpenGL Skeletal Application", "");
 		canvas = new Canvas();
+		
+		// Get the screen width and height and set up the viewport accordingly
+		unowned VideoInfo video_info = VideoInfo.get ();
+		canvas.resize_gl (video_info.current_w, video_info.current_h);
 	}
 
 	private void draw () {
