@@ -27,21 +27,65 @@ using ValaGL.Core;
 
 namespace ValaGL {
 
-private const GLfloat[] quad_vertices = {
-	-1, -1, 0,
-	-1,  1, 0,
-	 1,  1, 0,
-	 1, -1, 0,
+private const GLfloat[] cube_vertices = {
+	// front
+	-1, -1,  1,
+	1, -1,  1,
+	1,  1,  1,
+	-1,  1,  1,
+	// back
+	-1, -1, -1,
+	1, -1, -1,
+	1,  1, -1,
+	-1,  1, -1,
+};
+
+private const GLfloat[] cube_colors = {
+	// front colors
+	1, 0, 0,
+	0, 1, 0,
+	0, 0, 1,
+	1, 1, 1,
+	// back colors
+	1, 0, 0,
+	0, 1, 0,
+	0, 0, 1,
+	1, 1, 1,
+};
+
+private const GLushort cube_elements[] = {
+	// front
+	0, 1, 2,
+	2, 3, 0,
+	// top
+	1, 5, 6,
+	6, 2, 1,
+	// back
+	7, 6, 5,
+	5, 4, 7,
+	// bottom
+	4, 0, 3,
+	3, 7, 4,
+	// left
+	4, 5, 1,
+	1, 0, 4,
+	// right
+	3, 2, 6,
+	6, 7, 3,
 };
 
 public class Canvas : Object {
 	private GLProgram gl_program;
-	private VBO triangle_vbo;
+	private VBO coord_vbo;
+	private VBO color_vbo;
+	private IBO element_ibo;
+	
 	private Camera camera;
 	private Mat4 model_matrix;
 	
 	private GLint unif_transform;
 	private GLint attr_coord3d;
+	private GLint attr_v_color;
 	
 	public Canvas () throws AppError {
 		// GL initialization comes here
@@ -52,30 +96,36 @@ public class Canvas : Object {
 		glClearColor (71.0f/255, 95.0f/255, 121.0f/255, 1);
 		glEnable (GL_DEPTH_TEST);
 		glEnable (GL_BLEND);
+		glDisable (GL_CULL_FACE);
 		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		
 		try {
 			gl_program = new GLProgram (Util.data_file_path ("shaders/vertex.glsl"),
 										Util.data_file_path ("shaders/fragment.glsl"));
 			
-			triangle_vbo = new VBO(quad_vertices);
+			coord_vbo = new VBO (cube_vertices);
+			color_vbo = new VBO (cube_colors);
+			element_ibo = new IBO (cube_elements);
 		} catch (CoreError e) {
 			throw new AppError.INIT (e.message);
 		}
 		
 		unif_transform = gl_program.get_uniform_location ("transform");
 		attr_coord3d = gl_program.get_attrib_location ("coord3d");
+		attr_v_color = gl_program.get_attrib_location ("v_color");
 		
 		camera = new Camera();
-		Vec3 eye = Vec3.from_data (0, 1, 0);
-		Vec3 center = Vec3.from_data (0, 0, -4);
+		Vec3 eye = Vec3.from_data (0, 2, 0);
+		Vec3 center = Vec3.from_data (0, 0, -2);
 		Vec3 up = Vec3.from_data (0, 1, 0);
 		camera.look_at (ref eye, ref center, ref up);
 		
 		model_matrix = Mat4.identity ();
 		
-		Vec3 translation = Vec3.from_data (0.5f, 0.5f, -1);
+		Vec3 translation = Vec3.from_data (0, 0, -4);
 		GeometryUtil.translate (ref model_matrix, ref translation);
+		Vec3 rotation = Vec3.from_data (0, 1, 0);
+		GeometryUtil.rotate (ref model_matrix, 30, ref rotation);
 	}
 	
 	public void resize_gl (uint width, uint height) {
@@ -92,11 +142,18 @@ public class Canvas : Object {
 		// Apply camera before drawing the model
 		camera.apply (unif_transform, ref model_matrix);
 		
-		// Draw a simple triangle
 		glEnableVertexAttribArray (attr_coord3d);
-		triangle_vbo.apply_as_vertex_array (attr_coord3d, 3);
-		glDrawArrays (GL_QUADS, 0, 4);
+		glEnableVertexAttribArray (attr_v_color);
+		
+		// Apply buffers
+		coord_vbo.apply_as_vertex_array (attr_coord3d, 3);
+		color_vbo.apply_as_vertex_array (attr_v_color, 3);
+		element_ibo.make_current ();
+		
+		// Draw the cube
+		glDrawElements (GL_TRIANGLES, cube_elements.length, GL_UNSIGNED_SHORT, null);
 		glDisableVertexAttribArray (attr_coord3d);
+		glDisableVertexAttribArray (attr_v_color);
 	}
 }
 

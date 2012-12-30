@@ -29,6 +29,7 @@ public class Camera : Object {
 	private Mat4 projection_matrix;
 	private Mat4 view_matrix;
 	private Mat4 result_matrix;
+	private Mat4 total_matrix;
 	
 	public Camera () {
 		reset ();
@@ -55,17 +56,17 @@ public class Camera : Object {
 	}
 	
 	public void apply (GLint uniform_id, ref Mat4 model_matrix) {
-		Mat4 total_matrix = result_matrix;
+		total_matrix = result_matrix;
 		total_matrix.mul_mat (ref model_matrix);
-		glUniformMatrix4fv(uniform_id, 1, (GLboolean) GL_FALSE, total_matrix.data);
+		glUniformMatrix4fv (uniform_id, 1, (GLboolean) GL_FALSE, total_matrix.data);
 	}
 	
 	public void set_frustum_projection (GLfloat left, GLfloat right, GLfloat bottom, GLfloat top,
 										  GLfloat near, GLfloat far) {
 		projection_matrix = Mat4.from_data (
-			2 * near / (right - left), 0, (right + left) / (right - left), 0,
-			0, 2 * near / (top - bottom), (top + bottom) / (top - bottom), 0,
-			0, 0, -(far + near) / (far - near), -2 * far * near / (far - near),
+			2f * near / (right - left), 0, (right + left) / (right - left), 0,
+			0, 2f * near / (top - bottom), (top + bottom) / (top - bottom), 0,
+			0, 0, -(far + near) / (far - near), -2f * far * near / (far - near),
 			0, 0, -1, 0
 		);
 		
@@ -73,17 +74,24 @@ public class Camera : Object {
 	}
 	
 	public void set_perspective_projection (GLfloat fovy_deg, GLfloat aspect, GLfloat near, GLfloat far) {
-		GLfloat ymax = near * Math.tanf (GeometryUtil.deg_to_rad (fovy_deg));
-		GLfloat xmax = ymax * aspect;
-		set_frustum_projection (-xmax, xmax, -ymax, ymax, near, far);
+		var f = 1 / Math.tanf (GeometryUtil.deg_to_rad (fovy_deg / 2));
+		
+		projection_matrix = Mat4.from_data (
+			f / aspect, 0, 0, 0,
+			0, f, 0, 0,
+			0, 0, -(far + near) / (far - near), -2f * far * near / (far - near),
+			0, 0, -1, 0
+		);
+		
+		update ();
 	}
 	
 	public void set_ortho_projection (GLfloat left, GLfloat right, GLfloat bottom, GLfloat top,
 										  GLfloat near, GLfloat far) {
 		projection_matrix = Mat4.from_data (
-			2 / (right - left), 0, 0, (right + left) / (right - left),
-			0, 2 / (top - bottom), 0, (top + bottom) / (top - bottom),
-			0, 0, -2 * far * near / (far - near), -(far + near) / (far - near),
+			2f / (right - left), 0, 0, (right + left) / (right - left),
+			0, 2f / (top - bottom), 0, (top + bottom) / (top - bottom),
+			0, 0, -2f * far * near / (far - near), -(far + near) / (far - near),
 			0, 0, 0, 1
 		);
 		
@@ -95,9 +103,10 @@ public class Camera : Object {
 		l.sub (ref eye);
 		l.normalize ();
 		
-		Vec3 s = l.cross_product (ref up);
-		s.normalize ();
+		Vec3 uptemp = up;
+		uptemp.normalize ();
 		
+		Vec3 s = l.cross_product (ref uptemp);		
 		Vec3 u = s.cross_product (ref l);
 		
 		view_matrix = Mat4.from_data (
