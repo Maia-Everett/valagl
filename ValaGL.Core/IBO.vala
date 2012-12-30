@@ -25,33 +25,28 @@ using GL;
 
 namespace ValaGL.Core {
 
-public class VBO : Object {
+public class IBO : Object {
 	private GLuint id;
 	
-	public VBO (GLfloat[] data) throws CoreError {
+	public IBO (GLushort[] data) throws CoreError {
 		GLuint[] id_array = new GLuint[1];
 		glGenBuffers (1, id_array);
 		id = id_array[0];
 		
 		if (id == 0) {
-			throw new CoreError.VBO_INIT ("Cannot allocate vertex buffer object");
+			throw new CoreError.VBO_INIT ("Cannot allocate index buffer object");
 		}
 		
-		glBindBuffer (GL_ARRAY_BUFFER, id);
-		glBufferData (GL_ARRAY_BUFFER, data.length * sizeof (GLfloat), (GLvoid[]) data, GL_STATIC_DRAW);
-		glBindBuffer (GL_ARRAY_BUFFER, 0);
+		glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, id);
+		glBufferData (GL_ELEMENT_ARRAY_BUFFER, data.length * sizeof (GLushort), (GLvoid[]) data, GL_STATIC_DRAW);
+		glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, 0);
 	}
 	
 	public void make_current () {
-		glBindBuffer(GL_ARRAY_BUFFER, id);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, id);
 	}
 	
-	public void apply_as_vertex_array (GLint attribute, GLsizei stride) {
-		make_current ();
-		glVertexAttribPointer (attribute, stride, GL_FLOAT, (GLboolean) GL_FALSE, 0, null);
-	}
-	
-	~VBO () {
+	~IBO () {
 		if (id != 0) {
 			GLuint[] id_array = { id };
 			glDeleteBuffers (1, id_array);

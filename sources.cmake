@@ -3,6 +3,7 @@ set(VALAGL_CORE_CLASSES
 	CoreError
 	GeometryUtil
 	GLProgram
+	IBO
 	MatrixMath
 	Util
 	VBO
