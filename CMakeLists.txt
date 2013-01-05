@@ -55,6 +55,8 @@ CUSTOM_VAPIS
 	${CUSTOM_VAPIS}
 PACKAGES
 	${VALA_PACKAGES}
+OPTIONS
+	-g
 )
 
 include_directories(
