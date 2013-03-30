@@ -29,7 +29,7 @@ public class IBO : Object {
 	private GLuint id;
 	
 	public IBO (GLushort[] data) throws CoreError {
-		GLuint[] id_array = new GLuint[1];
+		GLuint id_array[1];
 		glGenBuffers (1, id_array);
 		id = id_array[0];
 		

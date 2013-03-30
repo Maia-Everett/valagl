@@ -44,10 +44,10 @@ public class GLProgram : Object {
 		glAttachShader (prog_id, fragment_shader);
 		glLinkProgram (prog_id);
 
-		GLint link_ok = GL_FALSE;
-		glGetProgramiv (prog_id, GL_LINK_STATUS, out link_ok);
+		GLint[] link_ok = { GL_FALSE };
+		glGetProgramiv (prog_id, GL_LINK_STATUS, link_ok);
 		
-		if (link_ok != GL_TRUE) {
+		if (link_ok[0] != GL_TRUE) {
 			throw new CoreError.SHADER_INIT ("Cannot link GL program");
 		}
 	}
@@ -68,12 +68,12 @@ public class GLProgram : Object {
 	
 	public GLint get_attrib_location (string name) {
 		assert (prog_id != 0);
-		return glGetAttribLocation (prog_id, (GLchar[]) name.data);
+		return glGetAttribLocation (prog_id, name);
 	}
 	
 	public GLint get_uniform_location (string name) {
 		assert (prog_id != 0);
-		return glGetUniformLocation (prog_id, (GLchar[]) name.data);
+		return glGetUniformLocation (prog_id, name);
 	}
 	
 	public void make_current () {
@@ -103,10 +103,10 @@ public class GLProgram : Object {
 		glShaderSource (shader, 1, sourceArray, null);
 		glCompileShader (shader);
 
-		GLint compile_ok = GL_FALSE;
-		glGetShaderiv (shader, GL_COMPILE_STATUS, out compile_ok);
+		GLint[] compile_ok = { GL_FALSE };
+		glGetShaderiv (shader, GL_COMPILE_STATUS, compile_ok);
 
-		if (compile_ok == GL_TRUE)
+		if (compile_ok[0] == GL_TRUE)
 		{
 			return shader;
 		}
