@@ -1,4 +1,5 @@
 set(VALAGL_CORE_CLASSES
+	_namespace
 	Camera
 	CoreError
 	GeometryUtil
@@ -14,6 +15,7 @@ foreach(CLASS ${VALAGL_CORE_CLASSES})
 endforeach()
 
 set(VALAGL_CLASSES
+	_namespace
 	AppError
 	App
 	Canvas

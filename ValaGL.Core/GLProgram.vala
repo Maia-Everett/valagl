@@ -1,6 +1,6 @@
 /*
     GLProgram.vala
-    Copyright (C) 2012 Maia Kozheva <sikon@ubuntu.com>
+    Copyright (C) 2013 Maia Kozheva <sikon@ubuntu.com>
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,9 @@ using GL;
 
 namespace ValaGL.Core {
 
+/**
+ * Encapsulation of an OpenGL GPU program, containing one vertex shader and one fragment shader.
+ */
 public class GLProgram : Object {
 	private GLuint vertex_shader = 0;
 	private GLuint fragment_shader = 0;
