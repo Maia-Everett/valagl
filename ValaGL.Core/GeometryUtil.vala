@@ -44,7 +44,7 @@ public class GeometryUtil : Object {
 	/**
 	 * Converts the given angle from radians to degrees.
 	 * 
-	 * @param deg Angle in degrees
+	 * @param rad Angle in degrees
 	 * @return Angle in radians
 	 */
 	public static GLfloat rad_to_deg (GLfloat rad) {
