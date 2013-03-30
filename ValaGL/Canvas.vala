@@ -92,7 +92,7 @@ public class Canvas : Object {
 	private GLint unif_transform;
 	private GLint attr_coord3d;
 	private GLint attr_v_color;
-	private uint rotation_angle;
+	private GLfloat rotation_angle;
 	
 	/**
 	 * Instantiates a new canvas object.
@@ -109,6 +109,7 @@ public class Canvas : Object {
 		}
 		
 		glClearColor (71.0f/255, 95.0f/255, 121.0f/255, 1);
+		glEnable (GL_MULTISAMPLE);
 		glEnable (GL_DEPTH_TEST);
 		glEnable (GL_BLEND);
 		glDisable (GL_CULL_FACE);
@@ -134,13 +135,6 @@ public class Canvas : Object {
 		Vec3 center = Vec3.from_data (0, 0, -2);
 		Vec3 up = Vec3.from_data (0, 1, 0);
 		camera.look_at (ref eye, ref center, ref up);
-		
-		model_matrix = Mat4.identity ();
-		
-		Vec3 translation = Vec3.from_data (0, 0, -4);
-		GeometryUtil.translate (ref model_matrix, ref translation);
-		Vec3 rotation = Vec3.from_data (0, 1, 0);
-		GeometryUtil.rotate (ref model_matrix, (GLfloat) rotation_angle, ref rotation);
 	}
 	
 	/**
@@ -169,6 +163,14 @@ public class Canvas : Object {
 	public void paint_gl () {
 		glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
+		// Compute current transformation matrix for the cube
+		model_matrix = Mat4.identity ();
+		
+		Vec3 translation = Vec3.from_data (0, 0, -4);
+		GeometryUtil.translate (ref model_matrix, ref translation);
+		Vec3 rotation = Vec3.from_data (0, 1, 0);
+		GeometryUtil.rotate (ref model_matrix, rotation_angle, ref rotation);
+		
 		// Activate our vertex and fragment shaders for the next drawing operations
 		gl_program.make_current ();
 		
@@ -196,7 +198,7 @@ public class Canvas : Object {
 	 * 
 	 * @param rotation_angle The new rotation angle (in degrees)
 	 */
-	public void update_scene_data(uint rotation_angle) {
+	public void update_scene_data(GLfloat rotation_angle) {
 		this.rotation_angle = rotation_angle;
 	}
 }
