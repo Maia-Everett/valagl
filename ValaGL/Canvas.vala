@@ -92,6 +92,7 @@ public class Canvas : Object {
 	private GLint unif_transform;
 	private GLint attr_coord3d;
 	private GLint attr_v_color;
+	private uint rotation_angle;
 	
 	/**
 	 * Instantiates a new canvas object.
@@ -139,7 +140,7 @@ public class Canvas : Object {
 		Vec3 translation = Vec3.from_data (0, 0, -4);
 		GeometryUtil.translate (ref model_matrix, ref translation);
 		Vec3 rotation = Vec3.from_data (0, 1, 0);
-		GeometryUtil.rotate (ref model_matrix, 30, ref rotation);
+		GeometryUtil.rotate (ref model_matrix, (GLfloat) rotation_angle, ref rotation);
 	}
 	
 	/**
@@ -186,6 +187,17 @@ public class Canvas : Object {
 		glDrawElements (GL_TRIANGLES, cube_elements.length, GL_UNSIGNED_SHORT, null);
 		glDisableVertexAttribArray (attr_coord3d);
 		glDisableVertexAttribArray (attr_v_color);
+	}
+	
+	/**
+	 * Updates the scene data.
+	 * 
+	 * In this application, the only variable scene data is the rotation angle.
+	 * 
+	 * @param rotation_angle The new rotation angle (in degrees)
+	 */
+	public void update_scene_data(uint rotation_angle) {
+		this.rotation_angle = rotation_angle;
 	}
 }
 

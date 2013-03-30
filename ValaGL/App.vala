@@ -29,9 +29,17 @@ namespace ValaGL {
  * The singleton application, responsible for managing the fullscreen SDL main window.
  */
 public class App : GLib.Object {
+	private enum EventCode {
+		TIMER_EVENT
+	}
+	
 	private unowned Screen screen;
 	private bool done;
 	private Canvas canvas;
+	private Timer timer;
+	
+	private uint initial_rotation_angle = 30;
+	private uint timer_ticks;
 	
 	/**
 	 * Creates the application.
@@ -46,12 +54,18 @@ public class App : GLib.Object {
 	public void run () throws AppError {
 		try {
 			init_video ();
+			init_timer ();
 
 			while (!done) {
 				process_events ();
 				draw ();
 			}
 		} finally {
+			if (timer != null) {
+				timer.remove ();
+				timer = null;
+			}
+			
 			// Free the canvas and associated GL resources
 			canvas = null;
 		}
@@ -81,6 +95,17 @@ public class App : GLib.Object {
 		// Get the screen width and height and set up the viewport accordingly
 		unowned VideoInfo video_info = VideoInfo.get ();
 		canvas.resize_gl (video_info.current_w, video_info.current_h);
+		canvas.set_rotation_angle (initial_rotation_angle);
+	}
+	
+	private void init_timer () {
+		timer = new Timer (50, (interval) => {
+			// Executed in a separate thread, so we exchange information with the UI thread through events
+			UserEvent event;
+			event.type = EventType.USEREVENT;
+			event.code = EventCode.TIMER_EVENT;
+			Event.push (event);
+		});
 	}
 
 	private void draw () {
@@ -101,6 +126,9 @@ public class App : GLib.Object {
 				break;
 			case EventType.KEYDOWN:
 				on_keyboard_event (event.key);
+				break;
+			case EventType.TIMER_EVENT:
+				on_timer_event ();
 				break;
 			}
 		}
@@ -136,6 +164,11 @@ public class App : GLib.Object {
 		}
 	}
 	
+	private void on_timer_event () {
+		timer_ticks++;
+		canvas.set_rotation_angle ((initial_rotation_angle + timer_ticks) % 360);
+	}
+	
 	private void on_quit () {
 		Event e = Event();
 		e.type = EventType.QUIT;
@@ -151,7 +184,7 @@ public class App : GLib.Object {
 	 * @param args Command line arguments. Ignored.
 	 */
 	public static int main (string[] args) {
-		SDL.init (InitFlag.VIDEO);
+		SDL.init (InitFlag.VIDEO | InitFlag.TIMER);
 
 		try {
 			new App ().run ();
