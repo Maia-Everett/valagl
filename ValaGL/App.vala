@@ -36,7 +36,7 @@ public class App : GLib.Object {
 	private unowned Screen screen;
 	private bool done;
 	private Canvas canvas;
-	private Timer timer;
+	private SDL.Timer timer;
 	
 	private uint initial_rotation_angle = 30;
 	private uint timer_ticks;
@@ -79,6 +79,10 @@ public class App : GLib.Object {
 		SDL.GL.set_attribute (GLattr.DEPTH_SIZE, 16);
 		SDL.GL.set_attribute (GLattr.DOUBLEBUFFER, 1);
 		
+		// Ask for multisampling if possible
+		SDL.GL.set_attribute (GLattr.MULTISAMPLEBUFFERS, 1);
+		SDL.GL.set_attribute (GLattr.MULTISAMPLESAMPLES, 4);
+		
 		// Enter fullscreen mode.
 		// Note: Under X, this grabs all input and confines it to the application fullscreen window.
 		// Therefore, we have to manually handle at least Alt-F4 and Alt-Tab, which we do in the keyboard handler.
@@ -95,16 +99,17 @@ public class App : GLib.Object {
 		// Get the screen width and height and set up the viewport accordingly
 		unowned VideoInfo video_info = VideoInfo.get ();
 		canvas.resize_gl (video_info.current_w, video_info.current_h);
-		canvas.set_rotation_angle (initial_rotation_angle);
+		canvas.update_scene_data (initial_rotation_angle);
 	}
 	
 	private void init_timer () {
-		timer = new Timer (50, (interval) => {
+		timer = new SDL.Timer (10, (interval) => {
 			// Executed in a separate thread, so we exchange information with the UI thread through events
-			UserEvent event;
+			SDL.Event event = SDL.Event ();
 			event.type = EventType.USEREVENT;
-			event.code = EventCode.TIMER_EVENT;
+			event.user.code = EventCode.TIMER_EVENT;
 			Event.push (event);
+			return interval;
 		});
 	}
 
@@ -127,7 +132,7 @@ public class App : GLib.Object {
 			case EventType.KEYDOWN:
 				on_keyboard_event (event.key);
 				break;
-			case EventType.TIMER_EVENT:
+			case EventType.USEREVENT:
 				on_timer_event ();
 				break;
 			}
@@ -165,8 +170,8 @@ public class App : GLib.Object {
 	}
 	
 	private void on_timer_event () {
-		timer_ticks++;
-		canvas.set_rotation_angle ((initial_rotation_angle + timer_ticks) % 360);
+		timer_ticks = (timer_ticks + 1) % 1800;
+		canvas.update_scene_data (initial_rotation_angle + timer_ticks / 5.0f);
 	}
 	
 	private void on_quit () {
