@@ -1,6 +1,6 @@
 /*
     App.vala
-    Copyright (C) 2012 Maia Everett <maia@everett.one>
+    Copyright (C) 2013 Maia Everett <maia@everett.one>
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
@@ -25,11 +25,24 @@ using SDL;
 
 namespace ValaGL {
 
+/**
+ * The singleton application, responsible for managing the fullscreen SDL main window.
+ */
 public class App : GLib.Object {
 	private unowned Screen screen;
 	private bool done;
 	private Canvas canvas;
+	
+	/**
+	 * Creates the application.
+	 */
+	public App() {
+		// Do nothing
+	}
 
+	/**
+	 * Runs the application.
+	 */
 	public void run () throws AppError {
 		try {
 			init_video ();
@@ -49,7 +62,7 @@ public class App : GLib.Object {
 		SDL.GL.set_attribute (GLattr.GREEN_SIZE, 8);
 		SDL.GL.set_attribute (GLattr.BLUE_SIZE, 8);
 		SDL.GL.set_attribute (GLattr.ALPHA_SIZE, 8);
-		SDL.GL.set_attribute (GLattr.DEPTH_SIZE, 24);
+		SDL.GL.set_attribute (GLattr.DEPTH_SIZE, 16);
 		SDL.GL.set_attribute (GLattr.DOUBLEBUFFER, 1);
 		
 		// Enter fullscreen mode.
@@ -129,6 +142,14 @@ public class App : GLib.Object {
 		Event.push(e);
 	}
 
+	/**
+	 * Application entry point.
+	 * 
+	 * Creates an instance of the ValaGL application and runs the SDL event loop
+	 * until the user exits the application.
+	 * 
+	 * @param args Command line arguments. Ignored.
+	 */
 	public static int main (string[] args) {
 		SDL.init (InitFlag.VIDEO);
 

@@ -1,6 +1,6 @@
 /*
     GeometryUtil.vala
-    Copyright (C) 2012 Maia Everett <maia@everett.one>
+    Copyright (C) 2013 Maia Everett <maia@everett.one>
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
@@ -25,17 +25,41 @@ using GL;
 
 namespace ValaGL.Core {
 
+/**
+ * Static helper class for stock geometry calculations and matrix transformations.
+ */
 public class GeometryUtil : Object {
 	private GeometryUtil () { }
 	
+	/**
+	 * Converts the given angle from degrees to radians.
+	 * 
+	 * @param deg Angle in radians
+	 * @return Angle in degrees
+	 */
 	public static GLfloat deg_to_rad (GLfloat deg) {
 		return (GLfloat) (deg * Math.PI / 180f);
 	}
 	
+	/**
+	 * Converts the given angle from radians to degrees.
+	 * 
+	 * @param deg Angle in degrees
+	 * @return Angle in radians
+	 */
 	public static GLfloat rad_to_deg (GLfloat rad) {
 		return (GLfloat) (rad / Math.PI * 180f);
 	}
 	
+	/**
+	 * Multiples the given matrix by a matrix that specifies a translation
+	 * by the given vector. The matrix is modified in-place.
+	 * 
+	 * For more information, refer to the ``glTranslatef`` legacy OpenGL function.
+	 * 
+	 * @param matrix The matrix to transform
+	 * @param translation The translation vector
+	 */
 	public static void translate (ref Mat4 matrix, ref Vec3 translation) {
 		var tmp = Mat4.from_data (
 			1, 0, 0, translation.x,
@@ -47,6 +71,16 @@ public class GeometryUtil : Object {
 		matrix.mul_mat (ref tmp);
 	}
 	
+	/**
+	 * Multiples the given matrix by a matrix that specifies a scale operation
+	 * by the given factors in the x, y and z directions.
+	 * The matrix is modified in-place.
+	 * 
+	 * For more information, refer to the ``glScalef`` legacy OpenGL function.
+	 * 
+	 * @param matrix The matrix to transform
+	 * @param scale_factors The scale factor vector
+	 */
 	public static void scale (ref Mat4 matrix, ref Vec3 scale_factors) {
 		var tmp = Mat4.from_data (
 			scale_factors.x, 0, 0, 0,
@@ -58,6 +92,20 @@ public class GeometryUtil : Object {
 		matrix.mul_mat (ref tmp);
 	}
 	
+	
+	/**
+	 * Multiples the given matrix by a matrix that specifies a rotation around
+	 * the given axis by the given angle. The matrix is modified in-place.
+	 * 
+	 * Be careful with these rotations. Unlike quaternion-based transformations,
+	 * they may incur gimbal lock.
+	 * 
+	 * For more information, refer to the ``glRotatef`` legacy OpenGL function.
+	 * 
+	 * @param matrix The matrix to transform
+	 * @param angle_deg The rotation angle in degrees
+	 * @param axis The rotation axis
+	 */
 	public static void rotate (ref Mat4 matrix, GLfloat angle_deg, ref Vec3 axis) {
 		Vec3 axis_normalized = axis;
 		axis_normalized.normalize ();

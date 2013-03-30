@@ -1,6 +1,6 @@
 /*
     Camera.vala
-    Copyright (C) 2012 Maia Everett <maia@everett.one>
+    Copyright (C) 2013 Maia Everett <maia@everett.one>
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
@@ -25,12 +25,24 @@ using GL;
 
 namespace ValaGL.Core {
 
+/**
+ * Encapsulates a camera object. A camera contains a projection matrix and a view matrix.
+ * 
+ * The main purpose of this class is to provide equivalents of legacy OpenGL functions
+ * removed in modern OpenGL. Advanced features like quaternion-based rotations are beyond
+ * the scope of this project.
+*/
 public class Camera : Object {
 	private Mat4 projection_matrix;
 	private Mat4 view_matrix;
 	private Mat4 result_matrix;
 	private Mat4 total_matrix;
 	
+	/**
+	 * Instantiates a camera object.
+	 * 
+	 * The projection and view matrices are set to the identity matrix.
+	 */
 	public Camera () {
 		reset ();
 	}
@@ -40,27 +52,59 @@ public class Camera : Object {
 		result_matrix.mul_mat (ref view_matrix);
 	}
 	
+	/**
+	 * Resets both the projection matrix and the view matrix.
+	 */
 	public void reset () {
 		reset_projection ();
 		reset_view ();
 	}
 	
+	/**
+	 * Resets the projection matrix, setting it to the identity matrix.
+	 */
 	public void reset_projection () {
 		projection_matrix = Mat4.identity ();
 		update ();
 	}
 	
+	/**
+	 * Resets the view matrix, setting it to the identity matrix.
+	 */
 	public void reset_view () {
 		view_matrix = Mat4.identity ();
 		update ();
 	}
 	
+	/**
+	 * Applies the camera to the next model object that will be drawn, by
+	 * multiplying the current projection and view matrices by the model matrix
+	 * passed to the function (which specifies the offset and rotation of the model
+	 * relative to the camera), and binds the matrix data to the specified
+	 * shader uniform variable.
+	 * 
+	 * @param uniform_id The shader uniform variable to bind to
+	 * @param model_matrix The model matrix
+	 */
 	public void apply (GLint uniform_id, ref Mat4 model_matrix) {
 		total_matrix = result_matrix;
 		total_matrix.mul_mat (ref model_matrix);
 		glUniformMatrix4fv (uniform_id, 1, (GLboolean) GL_FALSE, total_matrix.data);
 	}
 	
+	/**
+	 * Sets up a perspective projection. The previous projection matrix is ignored and overwritten.
+	 * 
+	 * Replicates the effects of the legacy ``glFrustum`` function within this camera.
+	 * Refer to that function for the complete description of the projection parameters.
+	 * 
+	 * @param left The coordinate of the left vertical clipping plane.
+	 * @param right The coordinate of the right vertical clipping plane.
+	 * @param bottom The coordinate of the bottom horizontal clipping plane.
+	 * @param top The coordinate of the top horizontal clipping plane.
+	 * @param near The coordinate of the near vertical clipping plane. Must be positive.
+	 * @param far The coordinate of the far vertical clipping plane. Must be positive.
+	 */
 	public void set_frustum_projection (GLfloat left, GLfloat right, GLfloat bottom, GLfloat top,
 										  GLfloat near, GLfloat far) {
 		projection_matrix = Mat4.from_data (
@@ -73,6 +117,18 @@ public class Camera : Object {
 		update ();
 	}
 	
+	/**
+	 * Sets up a symmetrical perspective projection. The previous projection matrix is ignored and overwritten.
+	 * 
+	 * Replicates the effects of the legacy ``gluPerspective`` function within this camera.
+	 * Refer to that function for the complete description of the projection parameters.
+	 * 
+	 * @param fovy_deg The field of view angle, in degrees, in the y direction.
+	 * @param aspect The aspect ratio that determines the field of view in the x direction.
+	 *               The aspect ratio is the ratio of x (width) to y (height).
+	 * @param near The coordinate of the near vertical clipping plane. Must be positive.
+	 * @param far The coordinate of the far vertical clipping plane. Must be positive.
+	 */
 	public void set_perspective_projection (GLfloat fovy_deg, GLfloat aspect, GLfloat near, GLfloat far) {
 		var f = 1 / Math.tanf (GeometryUtil.deg_to_rad (fovy_deg / 2));
 		
@@ -86,6 +142,19 @@ public class Camera : Object {
 		update ();
 	}
 	
+	/**
+	 * Sets up an orthogonal projection. The previous projection matrix is ignored and overwritten.
+	 * 
+	 * Replicates the effects of the legacy ``glOrtho`` function within this camera.
+	 * Refer to that function for the complete description of the projection parameters.
+	 * 
+	 * @param left The coordinate of the left vertical clipping plane.
+	 * @param right The coordinate of the right vertical clipping plane.
+	 * @param bottom The coordinate of the bottom horizontal clipping plane.
+	 * @param top The coordinate of the top horizontal clipping plane.
+	 * @param near The coordinate of the near vertical clipping plane.
+	 * @param far The coordinate of the far vertical clipping plane.
+	 */
 	public void set_ortho_projection (GLfloat left, GLfloat right, GLfloat bottom, GLfloat top,
 										  GLfloat near, GLfloat far) {
 		projection_matrix = Mat4.from_data (
@@ -98,6 +167,14 @@ public class Camera : Object {
 		update ();
 	}
 	
+	/**
+	 * Replicates the effects of the legacy ``gluLookAt`` function within this camera.
+	 * Refer to that function for the complete description of how the camera is positioned.
+	 * 
+	 * @param eye The 3D position of the camera
+	 * @param center The 3D position of the point the camera is looking at
+	 * @param up The up-direction
+	 */
 	public void look_at (ref Vec3 eye, ref Vec3 center, ref Vec3 up) {
 		Vec3 l = center;
 		l.sub (ref eye);

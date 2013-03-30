@@ -1,6 +1,6 @@
 /*
     CoreError.vala
-    Copyright (C) 2012 Maia Everett <maia@everett.one>
+    Copyright (C) 2013 Maia Everett <maia@everett.one>
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
@@ -23,9 +23,22 @@
 
 namespace ValaGL.Core {
 
+/**
+ * Error domain for the ValaGL core OpenGL support.
+ */
 public errordomain CoreError {
+	/**
+	 * Indicates a vertex or fragment shader initialization error.
+	 */
 	SHADER_INIT,
-	VBO_INIT
+	/**
+	 * Indicates a vertex buffer object initialization error.
+	 */
+	VBO_INIT,
+	/**
+	 * Indicates an index buffer object initialization error.
+	 */
+	IBO_INIT
 }
 
 }

@@ -1,6 +1,6 @@
 /*
     Canvas.vala
-    Copyright (C) 2012 Maia Everett <maia@everett.one>
+    Copyright (C) 2013 Maia Everett <maia@everett.one>
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
@@ -74,6 +74,12 @@ private const GLushort cube_elements[] = {
 	6, 7, 3,
 };
 
+/**
+ * The OpenGL canvas associated with the application main window.
+ * 
+ * This class is responsible for initializing the state of the OpenGL context
+ * and managing resize and redraw events sent by the underlying SDL window.
+ */
 public class Canvas : Object {
 	private GLProgram gl_program;
 	private VBO coord_vbo;
@@ -87,6 +93,14 @@ public class Canvas : Object {
 	private GLint attr_coord3d;
 	private GLint attr_v_color;
 	
+	/**
+	 * Instantiates a new canvas object.
+	 * 
+	 * Assumes that the desired OpenGL context is already selected.
+	 * 
+	 * Initializes GLEW, global OpenGL state, and GPU programs that will be
+	 * used for rendering.
+	 */
 	public Canvas () throws AppError {
 		// GL initialization comes here
 		if (glewInit () != 0) {
@@ -128,11 +142,29 @@ public class Canvas : Object {
 		GeometryUtil.rotate (ref model_matrix, 30, ref rotation);
 	}
 	
+	/**
+	 * Handler of the window resize event.
+	 * 
+	 * It is called for the first time when the SDL window is created and shown,
+	 * and then every time the display resolution changes.
+	 * 
+	 * Responsible for setting up the viewport size and perspective projection.
+	 * 
+	 * @param width The new window width
+	 * @param height The new window height
+	 */
 	public void resize_gl (uint width, uint height) {
 		glViewport(0, 0, (GLsizei) width, (GLsizei) height);
 		camera.set_perspective_projection (70, (GLfloat) width / (GLfloat) height, 0.01f, 100f);
 	}
 	
+	/**
+	 * Handler of the window repaint event.
+	 * 
+	 * It is called every time the window is created.
+	 * 
+	 * Responsible for drawing the OpenGL scene.
+	 */
 	public void paint_gl () {
 		glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		

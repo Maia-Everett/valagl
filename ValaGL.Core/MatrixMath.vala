@@ -1,6 +1,6 @@
 /*
     MatrixMath.vala
-    Copyright (C) 2012 Maia Everett <maia@everett.one>
+    Copyright (C) 2013 Maia Everett <maia@everett.one>
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
@@ -355,7 +355,7 @@ public struct Mat3 {
 	}
 	
 	/**
-	 * Given two vectors a and b, computes a matrix equal to a * bT.
+	 * Given two vectors ``a`` and ``b``, computes a matrix equal to ``a * bT``.
 	 */
 	public Mat3.from_vec_mul (ref Vec3 a, ref Vec3 b) {
 		data[0] = a.data[0] * b.data[0];
@@ -481,8 +481,10 @@ public struct Mat3 {
 	
 	/**
 	 * Returns a new matrix that is the inversion of this matrix.
-	 * success is set to false if the matrix cannot be inverted (its determinant is zero)
-	 * and true otherwise. If the matrix was not successfully inverted, the return value is undefined.
+	 * @param success Set to ``false`` if the matrix cannot be inverted (its determinant is zero)
+	 *                and ``true`` otherwise.
+	 * @return The inverted matrix if the matrix was not successfully inverted,
+	 *         otherwise the return value is undefined.
 	 */
 	public Mat3 inverted (out bool success) {
 		GLfloat det = det ();
@@ -511,14 +513,6 @@ public struct Mat3 {
 		
 		return res;
 	}
-}
-
-private static GLfloat det_helper3 ([CCode (array_length = false)] GLfloat[] col1,
-									  [CCode (array_length = false)] GLfloat[] col2,
-									  [CCode (array_length = false)] GLfloat[] col3) {
-	return    col1[0] * (col2[1] * col3[2] - col2[2] * col3[1])
-			+ col2[0] * (col3[1] * col1[2] - col3[2] * col1[1])
-			+ col3[0] * (col1[1] * col2[2] - col1[2] * col2[1]);
 }
 
 /**
@@ -565,7 +559,7 @@ public struct Mat4 {
 	}
 	
 	/**
-	 * Given two vectors a and b, computes a matrix equal to a * bT.
+	 * Given two vectors ``a`` and ``b``, computes a matrix equal to ``a * bT``.
 	 */
 	public Mat4.from_vec_mul (ref Vec4 a, ref Vec4 b) {
 		data[0]  = a.data[0] * b.data[0];
@@ -609,8 +603,9 @@ public struct Mat4 {
 	/**
 	 * Creates an expansion of the given 3x3 matrix into 4x4:
 	 * 
-	 * A 0
-	 * 0 1
+	 * A  0
+	 * 
+	 * 0  1
 	 */
 	public Mat4.expand (ref Mat3 mat3) {
 		data[0]  = mat3.data[0];
@@ -725,8 +720,10 @@ public struct Mat4 {
 	
 	/**
 	 * Returns a new matrix that is the inversion of this matrix.
-	 * success is set to false if the matrix cannot be inverted (its determinant is zero)
-	 * and true otherwise. If the matrix was not successfully inverted, the return value is undefined.
+	 * @param success Set to ``false`` if the matrix cannot be inverted (its determinant is zero)
+	 *                and ``true`` otherwise.
+	 * @return The inverted matrix if the matrix was not successfully inverted,
+	 *         otherwise the return value is undefined.
 	 */
 	public Mat4 inverted (out bool success) {
 		GLfloat det = det ();
@@ -764,6 +761,14 @@ public struct Mat4 {
 		
 		return res;
 	}
+}
+
+private static GLfloat det_helper3 ([CCode (array_length = false)] GLfloat[] col1,
+									  [CCode (array_length = false)] GLfloat[] col2,
+									  [CCode (array_length = false)] GLfloat[] col3) {
+	return    col1[0] * (col2[1] * col3[2] - col2[2] * col3[1])
+			+ col2[0] * (col3[1] * col1[2] - col3[2] * col1[1])
+			+ col3[0] * (col1[1] * col2[2] - col1[2] * col2[1]);
 }
 
 }
