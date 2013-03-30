@@ -7,7 +7,9 @@ pkg_check_modules(GIO gio-2.0)
 message("-- Checking for GModule...")
 pkg_check_modules(GMODULE gmodule-2.0)
 
-if(GLIB2_FOUND AND GMODULE_FOUND)
+if(GLIB2_FOUND AND GOBJECT_FOUND AND GMODULE_FOUND AND GIO_FOUND)
+	set(GLIB_FOUND TRUE)
+
     set(GLIB_ALL_INCLUDES
 		${GLIB2_INCLUDE_DIRS}
 		${GOBJECT_INCLUDE_DIRS}
@@ -27,5 +29,5 @@ if(GLIB2_FOUND AND GMODULE_FOUND)
 		${GMODULE_LDFLAGS}
 	)
 else()
-    message(FATAL_ERROR "GLib not found")
+    set(GLIB_FOUND FALSE)
 endif()

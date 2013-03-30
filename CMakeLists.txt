@@ -11,6 +11,8 @@ list(APPEND CMAKE_MODULE_PATH
 	${CMAKE_SOURCE_DIR}/cmake
 )
 
+option(BUILD_VALADOC "Build API documentation if Valadoc is available" ON)
+
 set(VALA_REQUIRED_VERSION 0.16)
 set(GLIB_REQUIRED_VERSION 2.30.0)
 set(GTK_REQUIRED_VERSION 3.0.0)
@@ -22,6 +24,19 @@ find_package(SDL REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(ExtraDeps REQUIRED)
+
+set(HAVE_VALADOC OFF)
+
+if(BUILD_VALADOC)
+	find_package(Valadoc)
+	
+	if(VALADOC_FOUND)
+		set(HAVE_VALADOC ON)
+		include(Valadoc)
+	else()
+		message("Valadoc not found, will not build documentation")
+	endif()
+endif()
 
 include(ValaVersion)
 include(ValaPrecompile)
@@ -82,5 +97,16 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
 	${OPENGL_LIBRARIES}
 	${EXTRA_DEP_LIBS}
 )
+
+if(HAVE_VALADOC)
+	valadoc(${CMAKE_PROJECT_NAME}
+		${CMAKE_BINARY_DIR}/valadoc
+		${APP_SOURCES}
+	CUSTOM_VAPIS
+		${CUSTOM_VAPIS}
+	PACKAGES
+		${VALA_PACKAGES}
+	)
+endif()
 
 include(install)
