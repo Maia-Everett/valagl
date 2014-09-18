@@ -1,5 +1,5 @@
-message("-- Checking for libgee...")
-pkg_check_modules(GEE gee-1.0)
+message("-- Checking for libgee-0.8...")
+pkg_check_modules(GEE gee-0.8)
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(ExtraDeps DEFAULT_MSG GEE_INCLUDE_DIRS)
