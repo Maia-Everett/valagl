@@ -58,7 +58,7 @@ set(CUSTOM_VAPIS
 )
 
 set(VALA_PACKAGES
-	gee-1.0
+	gee-0.8
 	gio-2.0
 	glib-2.0
 	sdl
@@ -96,6 +96,7 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
 	${GLEW_LIBRARY}
 	${OPENGL_LIBRARIES}
 	${EXTRA_DEP_LIBS}
+	-lm
 )
 
 if(HAVE_VALADOC)
