@@ -1,6 +1,6 @@
 /*
     AppError.vala
-    Copyright (C) 2013 Maia Everett <maia@everett.one>
+    Copyright (C) 2013, 2021 Maia Everett <maia@everett.one>
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by

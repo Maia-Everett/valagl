@@ -1,6 +1,6 @@
 /*
     GLEW.vapi
-    Copyright (C) 2012 Maia Everett <maia@everett.one>
+    Copyright (C) 2012, 2021 Maia Everett <maia@everett.one>
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal

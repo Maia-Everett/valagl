@@ -1,6 +1,6 @@
 /*
     CoreError.vala
-    Copyright (C) 2013 Maia Everett <maia@everett.one>
+    Copyright (C) 2013, 2021 Maia Everett <maia@everett.one>
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
