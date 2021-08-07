@@ -162,22 +162,6 @@ public class App : GLib.Object {
 			// Close on Esc
 			on_quit();
 			break;
-		case Keycode.F4:
-			// Close on Alt-F4
-			if ((event.keysym.mod & Keymod.LALT) != 0 || (event.keysym.mod & Keymod.RALT) != 0) {
-				on_quit();
-			}
-			
-			break;
-		/*
-		case KeySymbol.TAB:
-			// Handle Alt-Tab (it won't be passed to the OS because SDL grabs keyboard input)
-			if ((event.keysym.mod & KeyModifier.LALT) != 0 || (event.keysym.mod & KeyModifier.RALT) != 0) {
-				SDL.WindowManager.iconify ();
-			}
-			
-			break;
-		 */
 		default:
 			// Insert any other keyboard combinations here.
 			break;
