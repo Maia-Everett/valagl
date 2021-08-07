@@ -7,7 +7,7 @@ It sets up a fullscreen SDL window and displays a colored rotating cube.
 ## Building and running under Ubuntu
 
 ```
-sudo apt-get install libGLEW-dev libsdl1.2-dev libgee-dev cmake valac valadoc
+sudo apt-get install libglew-dev libsdl1.2-dev libgee-0.8-dev cmake valac valadoc
 mkdir bin
 cd bin; cmake ..; cd ..
 make -C bin
