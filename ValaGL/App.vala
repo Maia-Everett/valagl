@@ -22,6 +22,8 @@
 */
 
 using SDL;
+using SDL.Input;
+using SDL.Video;
 
 namespace ValaGL {
 
@@ -33,10 +35,11 @@ public class App : GLib.Object {
 		TIMER_EVENT
 	}
 	
-	private unowned Screen screen;
+	private Window window;
+	private SDL.Video.GL.Context context;
 	private bool done;
 	private Canvas canvas;
-	private SDL.Timer timer;
+	private SDL.Timer? timer;
 	
 	private uint initial_rotation_angle = 30;
 	private uint timer_ticks;
@@ -72,41 +75,49 @@ public class App : GLib.Object {
 	}
 
 	private void init_video () throws AppError {
-		SDL.GL.set_attribute (GLattr.RED_SIZE, 8);
-		SDL.GL.set_attribute (GLattr.GREEN_SIZE, 8);
-		SDL.GL.set_attribute (GLattr.BLUE_SIZE, 8);
-		SDL.GL.set_attribute (GLattr.ALPHA_SIZE, 8);
-		SDL.GL.set_attribute (GLattr.DEPTH_SIZE, 16);
-		SDL.GL.set_attribute (GLattr.DOUBLEBUFFER, 1);
+		SDL.Video.GL.set_attribute (SDL.Video.GL.Attributes.RED_SIZE, 8);
+		SDL.Video.GL.set_attribute (SDL.Video.GL.Attributes.GREEN_SIZE, 8);
+		SDL.Video.GL.set_attribute (SDL.Video.GL.Attributes.BLUE_SIZE, 8);
+		SDL.Video.GL.set_attribute (SDL.Video.GL.Attributes.ALPHA_SIZE, 8);
+		SDL.Video.GL.set_attribute (SDL.Video.GL.Attributes.DEPTH_SIZE, 16);
+		SDL.Video.GL.set_attribute (SDL.Video.GL.Attributes.DOUBLEBUFFER, 1);
 		
 		// Ask for multisampling if possible
-		SDL.GL.set_attribute (GLattr.MULTISAMPLEBUFFERS, 1);
-		SDL.GL.set_attribute (GLattr.MULTISAMPLESAMPLES, 4);
+		SDL.Video.GL.set_attribute (SDL.Video.GL.Attributes.MULTISAMPLEBUFFERS, 1);
+		SDL.Video.GL.set_attribute (SDL.Video.GL.Attributes.MULTISAMPLESAMPLES, 4);
 		
 		// Enter fullscreen mode.
 		// Note: Under X, this grabs all input and confines it to the application fullscreen window.
 		// Therefore, we have to manually handle at least Alt-F4 and Alt-Tab, which we do in the keyboard handler.
-		uint32 video_flags = SurfaceFlag.OPENGL | SurfaceFlag.FULLSCREEN;
-		screen = Screen.set_video_mode (0, 0, 32, video_flags);
+		window = new Window ("Vala OpenGL Skeletal Application", -1, -1, -1, -1,
+				WindowFlags.FULLSCREEN_DESKTOP | WindowFlags.OPENGL);
 		
-		if (screen == null) {
+		if (window == null) {
 			throw new AppError.INIT ("Could not set video mode");
 		}
 
-		SDL.WindowManager.set_caption ("Vala OpenGL Skeletal Application", "");
-		canvas = new Canvas();
+		context = SDL.Video.GL.Context.create (window);
+
+		if (context == null) {
+			throw new AppError.INIT ("Could not create GL context");
+		}
+
+		canvas = new Canvas ();
 		
 		// Get the screen width and height and set up the viewport accordingly
-		unowned VideoInfo video_info = VideoInfo.get ();
-		canvas.resize_gl (video_info.current_w, video_info.current_h);
+		int width;
+		int height;
+		window.get_size (out width, out height);
+		canvas.resize_gl (width, height);
 		canvas.update_scene_data (initial_rotation_angle);
 	}
 	
 	private void init_timer () {
-		timer = new SDL.Timer (10, (interval) => {
+		timer = SDL.Timer (10, (interval) => {
 			// Executed in a separate thread, so we exchange information with the UI thread through events
-			SDL.Event event = SDL.Event ();
-			event.type = EventType.USEREVENT;
+			SDL.Event event = SDL.Event () {
+				type = EventType.USEREVENT
+			};
 			event.user.code = EventCode.TIMER_EVENT;
 			Event.push (event);
 			return interval;
@@ -115,7 +126,7 @@ public class App : GLib.Object {
 
 	private void draw () {
 		canvas.paint_gl ();
-		SDL.GL.swap_buffers ();
+		SDL.Video.GL.swap_window (window);
 	}
 
 	private void process_events () {
@@ -126,8 +137,8 @@ public class App : GLib.Object {
 			case EventType.QUIT:
 				done = true;
 				break;
-			case EventType.VIDEORESIZE:
-				on_resize_event (event.resize);
+			case EventType.WINDOWEVENT:
+				on_window_event (event.window);
 				break;
 			case EventType.KEYDOWN:
 				on_keyboard_event (event.key);
@@ -139,23 +150,26 @@ public class App : GLib.Object {
 		}
 	}
 	
-	private void on_resize_event (ResizeEvent event) {
-		canvas.resize_gl (event.w, event.h);
+	private void on_window_event (WindowEvent event) {
+		if (event.event == WindowEventType.RESIZED) {
+			canvas.resize_gl (event.data1, event.data2);
+		}
 	}
 
 	private void on_keyboard_event (KeyboardEvent event) {
 		switch (event.keysym.sym) {
-		case KeySymbol.ESCAPE:
+		case Keycode.ESCAPE:
 			// Close on Esc
 			on_quit();
 			break;
-		case KeySymbol.F4:
+		case Keycode.F4:
 			// Close on Alt-F4
-			if ((event.keysym.mod & KeyModifier.LALT) != 0 || (event.keysym.mod & KeyModifier.RALT) != 0) {
+			if ((event.keysym.mod & Keymod.LALT) != 0 || (event.keysym.mod & Keymod.RALT) != 0) {
 				on_quit();
 			}
 			
 			break;
+		/*
 		case KeySymbol.TAB:
 			// Handle Alt-Tab (it won't be passed to the OS because SDL grabs keyboard input)
 			if ((event.keysym.mod & KeyModifier.LALT) != 0 || (event.keysym.mod & KeyModifier.RALT) != 0) {
@@ -163,6 +177,7 @@ public class App : GLib.Object {
 			}
 			
 			break;
+		 */
 		default:
 			// Insert any other keyboard combinations here.
 			break;
@@ -175,8 +190,9 @@ public class App : GLib.Object {
 	}
 	
 	private void on_quit () {
-		Event e = Event();
-		e.type = EventType.QUIT;
+		Event e = Event () {
+			type = EventType.QUIT
+		};
 		Event.push(e);
 	}
 

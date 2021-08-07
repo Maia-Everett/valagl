@@ -23,15 +23,15 @@
 
 namespace ValaGL.Core.AppConfig {
 	[CCode (cheader_filename = "config.h", cname = "CMAKE_INSTALL_PREFIX")]
-	public static const string PREFIX;
+	public const string PREFIX;
 	[CCode (cheader_filename = "config.h", cname = "CMAKE_INSTALL_BIN_DIR")]
-	public static const string BIN_DIR;
+	public const string BIN_DIR;
 	[CCode (cheader_filename = "config.h", cname = "CMAKE_INSTALL_DATA_DIR")]
-	public static const string DATA_DIR;
+	public const string DATA_DIR;
 	[CCode (cheader_filename = "config.h", cname = "CMAKE_INSTALL_APP_DATA_DIR")]
-	public static const string APP_DATA_DIR;
+	public const string APP_DATA_DIR;
 	[CCode (cheader_filename = "config.h", cname = "CMAKE_APP_VERSION")]
-	public static const string APP_VERSION;
+	public const string APP_VERSION;
 	[CCode (cheader_filename = "config.h", cname = "CMAKE_APP_AUTHORS")]
-	public static const string APP_AUTHORS;
+	public const string APP_AUTHORS;
 }

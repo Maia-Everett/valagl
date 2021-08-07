@@ -23,7 +23,7 @@ set(OpenGL_GL_PREFERENCE GLVND)
 find_package(PkgConfig REQUIRED)
 find_package(Vala REQUIRED)
 find_package(GLib REQUIRED)
-find_package(SDL REQUIRED)
+find_package(SDL2 REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(OpenGL REQUIRED)
 
@@ -57,12 +57,12 @@ set(CUSTOM_VAPIS
 	${CMAKE_SOURCE_DIR}/vapi/glew-minimal.vapi
 	${CMAKE_SOURCE_DIR}/vapi/gl.vapi
 	${CMAKE_SOURCE_DIR}/vapi/glu.vapi
+	${CMAKE_SOURCE_DIR}/vapi/sdl2.vapi
 )
 
 set(VALA_PACKAGES
 	gio-2.0
 	glib-2.0
-	sdl
 )
 
 vala_precompile(VALA_C
@@ -77,7 +77,7 @@ OPTIONS
 
 include_directories(
 	${GLIB_ALL_INCLUDES}
-	${SDL_INCLUDE_DIR}
+	${SDL2_INCLUDE_DIR}
 	${GLEW_INCLUDE_PATH}
 	${OPENGL_INCLUDE_DIR}
 	${CMAKE_BINARY_DIR}
@@ -85,14 +85,15 @@ include_directories(
 
 add_definitions(
 	${GLIB_ALL_CFLAGS}
+	-DNO_SDL_GLEXT
 )
 
 add_executable(${CMAKE_PROJECT_NAME} ${VALA_C})
 
 target_link_libraries(${CMAKE_PROJECT_NAME}
 	${GLIB_ALL_LIBS}
-	${SDL_LIBRARY}
 	${GLEW_LIBRARY}
+	${SDL2_LIBRARIES}
 	${OPENGL_LIBRARIES}
 	-lm
 )
