@@ -1,5 +1,5 @@
 project(valagl C)
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.10)
 
 # Change version number on release
 set(PROJECT_VERSION "0.1.0")
@@ -13,9 +13,12 @@ list(APPEND CMAKE_MODULE_PATH
 
 option(BUILD_VALADOC "Build API documentation if Valadoc is available" ON)
 
-set(VALA_REQUIRED_VERSION 0.16)
+set(VALA_REQUIRED_VERSION 0.48)
 set(GLIB_REQUIRED_VERSION 2.30.0)
 set(GTK_REQUIRED_VERSION 3.0.0)
+
+# Use GLVND, the modern OpenGL ABI
+set(OpenGL_GL_PREFERENCE GLVND)
 
 find_package(PkgConfig REQUIRED)
 find_package(Vala REQUIRED)
@@ -23,7 +26,6 @@ find_package(GLib REQUIRED)
 find_package(SDL REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(OpenGL REQUIRED)
-find_package(ExtraDeps REQUIRED)
 
 set(HAVE_VALADOC OFF)
 
@@ -58,7 +60,6 @@ set(CUSTOM_VAPIS
 )
 
 set(VALA_PACKAGES
-	gee-0.8
 	gio-2.0
 	glib-2.0
 	sdl
@@ -79,13 +80,11 @@ include_directories(
 	${SDL_INCLUDE_DIR}
 	${GLEW_INCLUDE_PATH}
 	${OPENGL_INCLUDE_DIR}
-	${EXTRA_DEP_INCLUDES}
 	${CMAKE_BINARY_DIR}
 )
 
 add_definitions(
 	${GLIB_ALL_CFLAGS}
-	${EXTRA_DEP_CFLAGS}
 )
 
 add_executable(${CMAKE_PROJECT_NAME} ${VALA_C})
@@ -95,7 +94,6 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
 	${SDL_LIBRARY}
 	${GLEW_LIBRARY}
 	${OPENGL_LIBRARIES}
-	${EXTRA_DEP_LIBS}
 	-lm
 )
 
