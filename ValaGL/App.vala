@@ -87,8 +87,6 @@ public class App : GLib.Object {
 		SDL.Video.GL.set_attribute (SDL.Video.GL.Attributes.MULTISAMPLESAMPLES, 4);
 		
 		// Enter fullscreen mode.
-		// Note: Under X, this grabs all input and confines it to the application fullscreen window.
-		// Therefore, we have to manually handle at least Alt-F4 and Alt-Tab, which we do in the keyboard handler.
 		window = new Window ("Vala OpenGL Skeletal Application", -1, -1, -1, -1,
 				WindowFlags.FULLSCREEN_DESKTOP | WindowFlags.OPENGL);
 		
