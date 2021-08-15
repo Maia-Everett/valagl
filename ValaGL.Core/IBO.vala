@@ -1,5 +1,5 @@
 /*
-    VBO.vala
+    IBO.vala
     Copyright (C) 2013, 2021 Maia Everett <maia@everett.one>
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
