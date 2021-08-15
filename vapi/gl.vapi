@@ -6,18 +6,6 @@ namespace GL {
 	[Compact]
 	public class GLsync {
 	}
-	[CCode (cheader_filename = "epoxy/gl.h", cname = "GLDEBUGPROC")]
-	[SimpleType]
-	public struct GLDEBUGPROC : int {
-	}
-	[CCode (cheader_filename = "epoxy/gl.h", cname = "GLDEBUGPROCAMD")]
-	[SimpleType]
-	public struct GLDEBUGPROCAMD : int {
-	}
-	[CCode (cheader_filename = "epoxy/gl.h", cname = "GLDEBUGPROCARB")]
-	[SimpleType]
-	public struct GLDEBUGPROCARB : int {
-	}
 	[CCode (cheader_filename = "epoxy/gl.h", cname = "GLbitfield")]
 	[SimpleType]
 	public struct GLbitfield : uint {
@@ -10102,12 +10090,12 @@ namespace GL {
 	public static void glCullParameterfvEXT (GL.GLenum pname, [CCode (array_length = false)] GL.GLfloat[] @params);
 	[CCode (cheader_filename = "epoxy/gl.h", cname = "glCurrentPaletteMatrixARB")]
 	public static void glCurrentPaletteMatrixARB (GL.GLint index);
-	[CCode (cheader_filename = "epoxy/gl.h", cname = "glDebugMessageCallback")]
-	public static void glDebugMessageCallback (GL.GLDEBUGPROC callback, void* userParam);
-	[CCode (cheader_filename = "epoxy/gl.h", cname = "glDebugMessageCallbackAMD")]
-	public static void glDebugMessageCallbackAMD (GL.GLDEBUGPROCAMD callback, out GL.GLvoid userParam);
-	[CCode (cheader_filename = "epoxy/gl.h", cname = "glDebugMessageCallbackARB")]
-	public static void glDebugMessageCallbackARB (GL.GLDEBUGPROCARB callback, [CCode (array_length = false)] GL.GLvoid[]? userParam);
+	[CCode (cheader_filename = "epoxy/gl.h", cname = "glDebugMessageCallback", delegate_target_pos = -1, delegate_target_cname = "userParam")]
+	public static void glDebugMessageCallback (GL.GLDEBUGPROC callback);
+	[CCode (cheader_filename = "epoxy/gl.h", cname = "glDebugMessageCallbackAMD", delegate_target_pos = -1, delegate_target_cname = "userParam")]
+	public static void glDebugMessageCallbackAMD (GL.GLDEBUGPROCAMD callback);
+	[CCode (cheader_filename = "epoxy/gl.h", cname = "glDebugMessageCallbackARB", delegate_target_pos = -1, delegate_target_cname = "userParam")]
+	public static void glDebugMessageCallbackARB (GL.GLDEBUGPROCARB callback);
 	[CCode (cheader_filename = "epoxy/gl.h", cname = "glDebugMessageControl")]
 	public static void glDebugMessageControl (GL.GLenum source, GL.GLenum type, GL.GLenum severity, GL.GLsizei count, [CCode (array_length = false)] GL.GLuint[]? ids, GL.GLboolean enabled);
 	[CCode (cheader_filename = "epoxy/gl.h", cname = "glDebugMessageControlARB")]
@@ -14554,4 +14542,13 @@ namespace GL {
 	public static void glWindowPos4svMESA ([CCode (array_length = false)] GL.GLshort[]? v);
 	[CCode (cheader_filename = "epoxy/gl.h", cname = "glWriteMaskEXT")]
 	public static void glWriteMaskEXT (GL.GLuint res, GL.GLuint @in, GL.GLenum outX, GL.GLenum outY, GL.GLenum outZ, GL.GLenum outW);
+
+	[CCode (cheader_filename = "epoxy/gl.h", cname = "GLDEBUGPROC", has_target = true, delegate_target_pos = -1, delegate_target_cname = "userParam")]
+	public delegate void GLDEBUGPROC (GL.GLenum source, GL.GLenum type, GLuint id, GL.GLenum severity, GL.GLsizei length, string message);
+
+	[CCode (cheader_filename = "epoxy/gl.h", cname = "GLDEBUGPROCAMD", has_target = true, delegate_target_pos = -1, delegate_target_cname = "userParam")]
+	public delegate void GLDEBUGPROCAMD (GL.GLenum source, GL.GLenum type, GL.GLuint id, GL.GLenum severity, GL.GLsizei length, string message);
+
+	[CCode (cheader_filename = "epoxy/gl.h", cname = "GLDEBUGPROCARB", has_target = true, delegate_target_pos = -1, delegate_target_cname = "userParam")]
+	public delegate void GLDEBUGPROCARB (GL.GLenum source, GL.GLenum type, GL.GLuint id, GL.GLenum severity, GL.GLsizei length, string message);
 }

@@ -102,6 +102,9 @@ public class Canvas : Object {
 	 * used for rendering.
 	 */
 	public Canvas () throws AppError {
+		glEnable (GL_DEBUG_OUTPUT);
+		glDebugMessageCallback (on_gl_error);
+
 		// GL initialization comes here
 		glClearColor (71.0f/255, 95.0f/255, 121.0f/255, 1);
 		glEnable (GL_MULTISAMPLE);
@@ -130,7 +133,13 @@ public class Canvas : Object {
 		Vec3 up = Vec3.from_data (0, 1, 0);
 		camera.look_at (ref eye, ref center, ref up);
 	}
-	
+
+	private void on_gl_error (GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, string message) {
+		stderr.printf("GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s\n",
+			( type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : "" ),
+		 	type, severity, message );
+	}
+
 	/**
 	 * Handler of the window resize event.
 	 * 
