@@ -22,7 +22,6 @@
 */
 
 using GL;
-using GLEW;
 using ValaGL.Core;
 
 namespace ValaGL {
@@ -104,10 +103,6 @@ public class Canvas : Object {
 	 */
 	public Canvas () throws AppError {
 		// GL initialization comes here
-		if (glewInit () != 0) {
-			throw new AppError.INIT("Cannot initialize GLEW");
-		}
-		
 		glClearColor (71.0f/255, 95.0f/255, 121.0f/255, 1);
 		glEnable (GL_MULTISAMPLE);
 		glEnable (GL_DEPTH_TEST);

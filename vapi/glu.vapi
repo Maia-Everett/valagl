@@ -20,10 +20,10 @@
  * 	Matias De la Puente <mfpuente.ar@gmail.com>
  *
  * Modified by Maia Everett <maia@everett.one>:
- * - use glew.h instead of glu.h
+ * - use epoxy/gl.h instead of glu.h
  */
  
-[CCode (lower_case_cprefix ="", cheader_filename="GL/glew.h")]
+[CCode (lower_case_cprefix ="", cheader_filename="epoxy/gl.h")]
 namespace GLU
 {
 	// Extensions

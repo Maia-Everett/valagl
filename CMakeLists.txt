@@ -24,8 +24,8 @@ find_package(PkgConfig REQUIRED)
 find_package(Vala REQUIRED)
 find_package(GLib REQUIRED)
 find_package(SDL2 REQUIRED)
-find_package(GLEW REQUIRED)
 find_package(OpenGL REQUIRED)
+pkg_check_modules(EPOXY REQUIRED epoxy)
 
 set(HAVE_VALADOC OFF)
 
@@ -54,7 +54,6 @@ set(CUSTOM_VAPIS
 	# VAPI containing install definitions, mapping from cmake generated config.h
 	${CMAKE_SOURCE_DIR}/vapi/AppConfig.vapi
 	# Order is important! GLEW must come before GL and GLU.
-	${CMAKE_SOURCE_DIR}/vapi/glew-minimal.vapi
 	${CMAKE_SOURCE_DIR}/vapi/gl.vapi
 	${CMAKE_SOURCE_DIR}/vapi/glu.vapi
 	${CMAKE_SOURCE_DIR}/vapi/sdl2.vapi
@@ -78,13 +77,14 @@ OPTIONS
 include_directories(
 	${GLIB_ALL_INCLUDES}
 	${SDL2_INCLUDE_DIR}
-	${GLEW_INCLUDE_PATH}
+	${EPOXY_INCLUDE_PATH}
 	${OPENGL_INCLUDE_DIR}
 	${CMAKE_BINARY_DIR}
 )
 
 add_definitions(
 	${GLIB_ALL_CFLAGS}
+	${EPOXY_CFLAGS_OTHER}
 	-DNO_SDL_GLEXT
 )
 
@@ -92,7 +92,7 @@ add_executable(${CMAKE_PROJECT_NAME} ${VALA_C})
 
 target_link_libraries(${CMAKE_PROJECT_NAME}
 	${GLIB_ALL_LIBS}
-	${GLEW_LIBRARY}
+	${EPOXY_LIBRARIES}
 	${SDL2_LIBRARIES}
 	${OPENGL_LIBRARIES}
 	-lm
