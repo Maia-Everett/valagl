@@ -81,6 +81,11 @@ public class App : GLib.Object {
 		SDL.Video.GL.set_attribute (SDL.Video.GL.Attributes.ALPHA_SIZE, 8);
 		SDL.Video.GL.set_attribute (SDL.Video.GL.Attributes.DEPTH_SIZE, 16);
 		SDL.Video.GL.set_attribute (SDL.Video.GL.Attributes.DOUBLEBUFFER, 1);
+
+		// Request OpenGL 3.3 core profile
+		SDL.Video.GL.set_attribute (SDL.Video.GL.Attributes.CONTEXT_PROFILE_MASK, SDL.Video.GL.ProfileType.CORE);
+		SDL.Video.GL.set_attribute (SDL.Video.GL.Attributes.CONTEXT_MAJOR_VERSION, 3);
+		SDL.Video.GL.set_attribute (SDL.Video.GL.Attributes.CONTEXT_MINOR_VERSION, 3);
 		
 		// Ask for multisampling if possible
 		SDL.Video.GL.set_attribute (SDL.Video.GL.Attributes.MULTISAMPLEBUFFERS, 1);
