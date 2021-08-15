@@ -7,6 +7,7 @@ set(VALAGL_CORE_CLASSES
 	IBO
 	MatrixMath
 	Util
+	VAO
 	VBO
 )
 

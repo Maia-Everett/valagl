@@ -83,6 +83,7 @@ public class Canvas : Object {
 	private GLProgram gl_program;
 	private VBO coord_vbo;
 	private VBO color_vbo;
+	private VAO vao;
 	private IBO element_ibo;
 	
 	private Camera camera;
@@ -115,17 +116,23 @@ public class Canvas : Object {
 		try {
 			gl_program = new GLProgram (Util.data_file_path ("shaders/vertex.glsl"),
 										Util.data_file_path ("shaders/fragment.glsl"));
-			
+
+			unif_transform = gl_program.get_uniform_location ("transform");
+			attr_coord3d = gl_program.get_attrib_location ("coord3d");
+			attr_v_color = gl_program.get_attrib_location ("v_color");
+
+			vao = new VAO();
+																		
 			coord_vbo = new VBO (cube_vertices);
+			vao.register_vbo (coord_vbo, attr_coord3d, 3);
+
 			color_vbo = new VBO (cube_colors);
+			vao.register_vbo (color_vbo, attr_v_color, 3);
+			
 			element_ibo = new IBO (cube_elements);
 		} catch (CoreError e) {
 			throw new AppError.INIT (e.message);
 		}
-		
-		unif_transform = gl_program.get_uniform_location ("transform");
-		attr_coord3d = gl_program.get_attrib_location ("coord3d");
-		attr_v_color = gl_program.get_attrib_location ("v_color");
 		
 		camera = new Camera();
 		Vec3 eye = Vec3.from_data (0, 2, 0);
@@ -184,8 +191,7 @@ public class Canvas : Object {
 		glEnableVertexAttribArray (attr_v_color);
 		
 		// Apply buffers
-		coord_vbo.apply_as_vertex_array (attr_coord3d, 3);
-		color_vbo.apply_as_vertex_array (attr_v_color, 3);
+		vao.make_current ();
 		element_ibo.make_current ();
 		
 		// Draw the cube
