@@ -14247,11 +14247,11 @@ namespace GL {
 	[CCode (cheader_filename = "epoxy/gl.h", cname = "glVertexAttribP4uiv")]
 	public static void glVertexAttribP4uiv (GL.GLuint index, GL.GLenum type, GL.GLboolean normalized, [CCode (array_length = false)] GL.GLuint[]? value);
 	[CCode (cheader_filename = "epoxy/gl.h", cname = "glVertexAttribPointer")]
-	public static void glVertexAttribPointer (GL.GLuint index, GL.GLint size, GL.GLenum type, GL.GLboolean normalized, GL.GLsizei stride, [CCode (array_length = false)] GL.GLvoid[]? pointer);
+	public static void glVertexAttribPointer (GL.GLuint index, GL.GLint size, GL.GLenum type, GL.GLboolean normalized, GL.GLsizei stride, [CCode (array_length = false)] GL.GLvoid* pointer);
 	[CCode (cheader_filename = "epoxy/gl.h", cname = "glVertexAttribPointerARB")]
-	public static void glVertexAttribPointerARB (GL.GLuint index, GL.GLint size, GL.GLenum type, GL.GLboolean normalized, GL.GLsizei stride, [CCode (array_length = false)] GL.GLvoid[]? pointer);
+	public static void glVertexAttribPointerARB (GL.GLuint index, GL.GLint size, GL.GLenum type, GL.GLboolean normalized, GL.GLsizei stride, [CCode (array_length = false)] GL.GLvoid* pointer);
 	[CCode (cheader_filename = "epoxy/gl.h", cname = "glVertexAttribPointerNV")]
-	public static void glVertexAttribPointerNV (GL.GLuint index, GL.GLint fsize, GL.GLenum type, GL.GLsizei stride, [CCode (array_length = false)] GL.GLvoid[]? pointer);
+	public static void glVertexAttribPointerNV (GL.GLuint index, GL.GLint fsize, GL.GLenum type, GL.GLsizei stride, [CCode (array_length = false)] GL.GLvoid* pointer);
 	[CCode (cheader_filename = "epoxy/gl.h", cname = "glVertexAttribs1dvNV")]
 	public static void glVertexAttribs1dvNV (GL.GLuint index, GL.GLsizei count, [CCode (array_length = false)] GL.GLdouble[]? v);
 	[CCode (cheader_filename = "epoxy/gl.h", cname = "glVertexAttribs1fvNV")]
